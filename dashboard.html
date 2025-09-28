@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1 class="dashboard-title">🎮 Portfolio Dashboard</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="dashboard.importData()">
+                    📥 Import
+                </button>
+                <button class="btn btn-secondary" onclick="dashboard.exportData()">
+                    📤 Export All
+                </button>
+                <button class="btn btn-secondary" onclick="previewPortfolio()">
+                    👀 Preview
+                </button>
+                <button class="btn btn-secondary" onclick="dashboard.clearAllData()">
+                    🗑️ Clear Data
+                </button>
+                <a href="index.html" class="btn btn-primary">
+                    🏠 Back to Portfolio
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <h3 class="sidebar-title">📁 Configuration Files</h3>
+            <div class="file-list">
+                <div class="file-item active" data-file="colors">
+                    🎨 Colors
+                </div>
+                <div class="file-item" data-file="personal">
+                    👤 Personal Data
+                </div>
+                <div class="file-item" data-file="projects">
+                    🚀 Projects
+                </div>
+                <div class="file-item" data-file="skills">
+                    💪 Skills
+                </div>
+                <div class="file-item" data-file="contact">
+                    📞 Contact
+                </div>
+                <div class="file-item" data-file="social">
+                    🌐 Social Links
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="status-message" id="statusMessage"></div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="form">✏️ Form Editor</button>
+                <button class="tab" data-tab="json">📝 JSON Editor</button>
+                <button class="tab" data-tab="preview">👁️ Preview</button>
+            </div>
+
+            <!-- Form Editor Tab -->
+            <div class="tab-content active" id="formTab">
+                <div class="content-header">
+                    <h2 class="content-title" id="contentTitle">Colors Configuration</h2>
+                </div>
+                <div id="formEditor">
+                    <!-- Form content will be dynamically generated -->
+                </div>
+            </div>
+
+            <!-- JSON Editor Tab -->
+            <div class="tab-content" id="jsonTab">
+                <div class="content-header">
+                    <h2 class="content-title">Raw JSON Editor</h2>
+                </div>
+                <div class="editor-container">
+                    <textarea id="jsonEditor" class="editor-textarea" placeholder="JSON content will appear here..."></textarea>
+                    <div class="editor-actions">
+                        <button class="btn btn-secondary" onclick="validateJSON()">
+                            ✅ Validate JSON
+                        </button>
+                        <button class="btn btn-secondary" onclick="formatJSON()">
+                            🎨 Format JSON
+                        </button>
+                        <button class="btn btn-primary" onclick="saveJSON()">
+                            💾 Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Tab -->
+            <div class="tab-content" id="previewTab">
+                <div class="content-header">
+                    <h2 class="content-title">Data Preview</h2>
+                </div>
+                <div class="json-preview" id="jsonPreview"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

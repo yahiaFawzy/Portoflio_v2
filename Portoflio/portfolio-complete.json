@@ -1,0 +1,164 @@
+{
+  "colors": {
+    "primary": "#64ffda",
+    "secondary": "#667eea",
+    "accent": "#ff6b6b",
+    "background": "#0a0a0a",
+    "surface": "#1a1a2e",
+    "text": "#ffffff"
+  },
+  "personal": {
+    "name": "Yahia Fawzy ",
+    "title": "Game Developer & Graphics Engineer",
+    "about": "Passionate game developer with 5+ years of experience creating immersive interactive experiences. Specialized in Unity, Unreal Engine, and cutting-edge game technologies. I believe in the power of games to tell stories, connect people, and create unforgettable moments.",
+    "experienceYears": 5,
+    "projectsCompleted": 23,
+    "awards": 7,
+    "profileImage": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23667eea'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='60' fill='white' text-anchor='middle' dy='.3em'%3EAJ%3C/text%3E%3C/svg%3E"
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": "Cyber Runner 2077",
+      "description": "A futuristic endless runner game with cyberpunk aesthetics, featuring dynamic lighting and procedural level generation.",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23667eea'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3ECyber Runner%3C/text%3E%3C/svg%3E",
+      "technologies": [
+        "Unity",
+        "C#",
+        "Shader Graph",
+        "ProBuilder"
+      ],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    },
+    {
+      "id": 2,
+      "title": "Fantasy Quest RPG",
+      "description": "Epic fantasy RPG with turn-based combat system, character progression, and immersive storytelling.",
+      "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23ff6b6b'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3EFantasy Quest%3C/text%3E%3C/svg%3E",
+      "technologies": [
+        "Unreal Engine",
+        "Blueprint",
+        "C++",
+        "UI/UX"
+      ],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    },
+    {
+      "id": 3,
+      "title": "New Project",
+      "description": "Project description here...",
+      "image": "",
+      "technologies": [],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    },
+    {
+      "id": 4,
+      "title": "New Project",
+      "description": "Project description here...",
+      "image": "",
+      "technologies": [],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    },
+    {
+      "id": 5,
+      "title": "New Project",
+      "description": "Project description here...",
+      "image": "",
+      "technologies": [],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    },
+    {
+      "id": 6,
+      "title": "New Project",
+      "description": "Project description here...",
+      "image": "",
+      "technologies": [],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    },
+    {
+      "id": 7,
+      "title": "New Project",
+      "description": "Project description here...",
+      "image": "",
+      "technologies": [],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    },
+    {
+      "id": 8,
+      "title": "New Project",
+      "description": "Project description here...",
+      "image": "",
+      "technologies": [],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": true
+    }
+  ],
+  "skills": {
+    "Game Engines": {
+      "icon": "🎮",
+      "skills": [
+        "Unity",
+        "Unreal Engine",
+        "Godot",
+        "GameMaker Studio"
+      ]
+    },
+    "Programming": {
+      "icon": "💻",
+      "skills": [
+        "C#",
+        "C++",
+        "JavaScript",
+        "Python",
+        "GDScript"
+      ]
+    },
+    "Graphics & Art": {
+      "icon": "🎨",
+      "skills": [
+        "Blender",
+        "Maya",
+        "Photoshop",
+        "Substance Painter",
+        "Shader Programming"
+      ]
+    }
+  },
+  "contact": {
+    "email": "alex@gamedev.com",
+    "phone": "+1 (555) 123-4567",
+    "location": "San Francisco, CA"
+  },
+  "social": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com",
+      "icon": "🔗"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://linkedin.com",
+      "icon": "💼"
+    },
+    {
+      "name": "Twitter",
+      "url": "https://twitter.com",
+      "icon": "🐦"
+    }
+  ]
+}
