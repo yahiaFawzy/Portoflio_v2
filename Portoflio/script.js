@@ -643,5 +643,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Performance Optimization and Enhancement Features
+class PortfolioEnhancementManager {
+    constructor() {
+        this.scrollToTopBtn = null;
+        this.init();
+    }
+
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.initScrollToTop();
+            this.initAccessibilityFeatures();
+        });
+    }
+
+    initScrollToTop() {
+        this.scrollToTopBtn = document.getElementById('scrollToTop');
+        if (!this.scrollToTopBtn) return;
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', this.throttle(() => {
+            if (window.pageYOffset > 300) {
+                this.scrollToTopBtn.classList.add('visible');
+            } else {
+                this.scrollToTopBtn.classList.remove('visible');
+            }
+        }, 100));
+
+        // Scroll to top functionality
+        this.scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    initAccessibilityFeatures() {
+        // Add keyboard navigation for interactive elements
+        document.addEventListener('keydown', (e) => {
+            // ESC key to close modals
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.contact-notification, [class*="modal"]');
+                modals.forEach(modal => {
+                    if (modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                });
+            }
+
+            // Enter key for scroll to top
+            if (e.key === 'Enter' && e.target === this.scrollToTopBtn) {
+                this.scrollToTopBtn.click();
+            }
+        });
+    }
+
+    // Throttle function for performance
+    throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        }
+    }
+}
+
+// Initialize enhancement manager
+const enhancementManager = new PortfolioEnhancementManager();
+
 // Initialize the portfolio manager
 const portfolio = new PortfolioManager();

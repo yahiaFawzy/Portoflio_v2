@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional Game Developer Portfolio - Creating Interactive Experiences with Unity, Unreal Engine, and cutting-edge technologies">
+    <meta name="keywords" content="game developer, portfolio, unity, unreal engine, game design, interactive experiences">
+    <meta name="author" content="Game Developer">
+    <meta property="og:title" content="Game Developer Portfolio">
+    <meta property="og:description" content="Professional Game Developer Portfolio - Creating Interactive Experiences">
+    <meta property="og:type" content="website">
     <title>Portfolio - Game Developer</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -192,6 +201,24 @@
 
     <!-- Particles Container -->
     <div id="particles"></div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <!-- Performance Monitoring -->
+    <script>
+        // Preload critical resources
+        const preloadFont = document.createElement('link');
+        preloadFont.rel = 'preload';
+        preloadFont.as = 'font';
+        preloadFont.type = 'font/woff2';
+        preloadFont.crossOrigin = 'anonymous';
+        document.head.appendChild(preloadFont);
+    </script>
 
     <script src="script.js"></script>
 </body>
