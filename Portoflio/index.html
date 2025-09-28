@@ -160,17 +160,32 @@
                         </div>
                     </div>
                 </div>
-                <form class="contact-form">
+                <form class="contact-form" id="contactForm">
                     <div class="form-group">
-                        <input type="text" placeholder="Your Name" required>
+                        <input type="text" name="name" placeholder="Your Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" placeholder="Your Email" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
                     </div>
                     <div class="form-group">
-                        <textarea placeholder="Your Message" rows="5" required></textarea>
+                        <input type="text" name="subject" placeholder="Subject" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">📧 Send via Email</button>
+                        <button type="button" class="btn btn-secondary" id="copyMessageBtn">📋 Copy Message</button>
+                        <button type="button" class="btn btn-secondary" id="downloadMessageBtn">💾 Download Message</button>
+                    </div>
+                    <div class="contact-methods">
+                        <p class="contact-note">Choose your preferred method to send your message:</p>
+                        <ul class="method-list">
+                            <li><strong>Send via Email:</strong> Opens your default email client</li>
+                            <li><strong>Copy Message:</strong> Copies formatted message to clipboard</li>
+                            <li><strong>Download:</strong> Downloads message as text file</li>
+                        </ul>
+                    </div>
                 </form>
             </div>
         </div>

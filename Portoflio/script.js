@@ -617,31 +617,250 @@ function scrollToSection(sectionId) {
     }
 }
 
-// Form handling
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('.contact-form');
-    if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+// Contact Form Handling - Multiple Working Options
+class ContactFormManager {
+    constructor() {
+        this.form = null;
+        this.init();
+    }
 
-            // Simulate form submission
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-
-            submitBtn.textContent = 'Sending...';
-            submitBtn.disabled = true;
-
-            setTimeout(() => {
-                submitBtn.textContent = 'Message Sent!';
-                setTimeout(() => {
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                    form.reset();
-                }, 2000);
-            }, 1500);
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.form = document.querySelector('.contact-form');
+            if (this.form) {
+                this.setupEventListeners();
+            }
         });
     }
-});
+
+    setupEventListeners() {
+        // Email submission
+        this.form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.sendViaEmail();
+        });
+
+        // Copy to clipboard
+        const copyBtn = document.getElementById('copyMessageBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                this.copyToClipboard();
+            });
+        }
+
+        // Download message
+        const downloadBtn = document.getElementById('downloadMessageBtn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                this.downloadMessage();
+            });
+        }
+    }
+
+    getFormData() {
+        const formData = new FormData(this.form);
+        return {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            subject: formData.get('subject'),
+            message: formData.get('message')
+        };
+    }
+
+    validateForm() {
+        const data = this.getFormData();
+        if (!data.name || !data.email || !data.subject || !data.message) {
+            this.showNotification('Please fill in all fields', 'error');
+            return false;
+        }
+        
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            this.showNotification('Please enter a valid email address', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+
+    sendViaEmail() {
+        if (!this.validateForm()) return;
+
+        const data = this.getFormData();
+        const subject = encodeURIComponent(data.subject);
+        const body = encodeURIComponent(
+            `Hi!\n\n` +
+            `My name is ${data.name} and I'd like to get in touch.\n\n` +
+            `Message: ${data.message}\n\n` +
+            `Best regards,\n${data.name}\n` +
+            `Email: ${data.email}`
+        );
+
+        // Get the portfolio owner's email from contact data
+        const portfolioEmail = this.getPortfolioEmail();
+        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}&body=${body}`;
+
+        // Open email client
+        window.location.href = mailtoLink;
+        
+        this.showNotification('Opening your email client...', 'success');
+        this.resetForm(2000);
+    }
+
+    async copyToClipboard() {
+        if (!this.validateForm()) return;
+
+        const data = this.getFormData();
+        const messageText = this.formatMessage(data);
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(messageText);
+            } else {
+                // Fallback for older browsers
+                this.fallbackCopyToClipboard(messageText);
+            }
+            
+            this.showNotification('Message copied to clipboard!', 'success');
+            this.resetForm(2000);
+        } catch (error) {
+            this.showNotification('Failed to copy message. Please try again.', 'error');
+        }
+    }
+
+    fallbackCopyToClipboard(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            textArea.remove();
+        } catch (error) {
+            textArea.remove();
+            throw error;
+        }
+    }
+
+    downloadMessage() {
+        if (!this.validateForm()) return;
+
+        const data = this.getFormData();
+        const messageText = this.formatMessage(data);
+        
+        const blob = new Blob([messageText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `message-from-${data.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        this.showNotification('Message downloaded successfully!', 'success');
+        this.resetForm(2000);
+    }
+
+    formatMessage(data) {
+        const timestamp = new Date().toLocaleString();
+        return `Contact Message
+=================
+
+From: ${data.name}
+Email: ${data.email}
+Subject: ${data.subject}
+Date: ${timestamp}
+
+Message:
+--------
+${data.message}
+
+---
+Generated from Portfolio Contact Form`;
+    }
+
+    getPortfolioEmail() {
+        // Try to get email from contact configuration
+        const contactEmail = document.getElementById('contactEmail');
+        if (contactEmail && contactEmail.textContent !== 'Loading...') {
+            return contactEmail.textContent;
+        }
+        
+        // Fallback to a default
+        return 'contact@example.com';
+    }
+
+    showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `contact-notification contact-notification-${type}`;
+        notification.textContent = message;
+        
+        // Style the notification
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            z-index: 10000;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideInNotification 0.3s ease;
+            background: ${type === 'success' ? 'linear-gradient(45deg, #4caf50, #45a049)' : 'linear-gradient(45deg, #f44336, #d32f2f)'};
+        `;
+
+        // Add animation keyframes if not already added
+        if (!document.querySelector('#notificationStyles')) {
+            const style = document.createElement('style');
+            style.id = 'notificationStyles';
+            style.textContent = `
+                @keyframes slideInNotification {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutNotification {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(notification);
+
+        // Remove notification after 4 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOutNotification 0.3s ease forwards';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
+    }
+
+    resetForm(delay = 0) {
+        setTimeout(() => {
+            if (this.form) {
+                this.form.reset();
+            }
+        }, delay);
+    }
+}
+
+// Initialize the contact form manager
+const contactFormManager = new ContactFormManager();
 
 // Initialize the portfolio manager
 const portfolio = new PortfolioManager();

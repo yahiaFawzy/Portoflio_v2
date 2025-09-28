@@ -690,6 +690,51 @@ section {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-actions .btn {
+    justify-content: center;
+}
+
+.contact-methods {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    margin-top: 20px;
+}
+
+.contact-note {
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.method-list {
+    list-style: none;
+    padding: 0;
+}
+
+.method-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.method-list li:last-child {
+    border-bottom: none;
+}
+
+.method-list strong {
+    color: var(--color-primary);
+}
+
 /* Footer */
 .footer {
     background: rgba(10, 10, 10, 0.9);
@@ -939,6 +984,16 @@ section {
         width: 50px;
         height: 50px;
         font-size: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        text-align: center;
     }
 }
 
