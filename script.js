@@ -98,6 +98,7 @@ class DashboardManager {
             contact: {
                 email: "alex@gamedev.com",
                 phone: "+1 (555) 123-4567",
+                whatsapp: "+15551234567", // WhatsApp number (international format)
                 location: "San Francisco, CA"
             },
             social: [
@@ -400,6 +401,10 @@ class DashboardManager {
                 <div class="form-group">
                     <label class="form-label">Phone</label>
                     <input type="tel" class="form-input" value="${data.phone}" data-field="phone">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WhatsApp Number (international format: +1234567890)</label>
+                    <input type="tel" class="form-input" value="${data.whatsapp || data.phone}" data-field="whatsapp" placeholder="+1234567890">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Location</label>

@@ -640,6 +640,14 @@ class ContactFormManager {
             this.sendViaEmail();
         });
 
+        // WhatsApp
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        if (whatsappBtn) {
+            whatsappBtn.addEventListener('click', () => {
+                this.sendViaWhatsApp();
+            });
+        }
+
         // Copy to clipboard
         const copyBtn = document.getElementById('copyMessageBtn');
         if (copyBtn) {
@@ -688,24 +696,322 @@ class ContactFormManager {
         if (!this.validateForm()) return;
 
         const data = this.getFormData();
-        const subject = encodeURIComponent(data.subject);
-        const body = encodeURIComponent(
-            `Hi!\n\n` +
-            `My name is ${data.name} and I'd like to get in touch.\n\n` +
-            `Message: ${data.message}\n\n` +
-            `Best regards,\n${data.name}\n` +
-            `Email: ${data.email}`
-        );
-
-        // Get the portfolio owner's email from contact data
         const portfolioEmail = this.getPortfolioEmail();
-        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}&body=${body}`;
 
-        // Open email client
-        window.location.href = mailtoLink;
+        // Try multiple methods for better compatibility
+        this.tryEmailMethods(data, portfolioEmail);
+    }
+
+    tryEmailMethods(data, portfolioEmail) {
+        const methods = [
+            () => this.sendViaMailtoWithWindow(data, portfolioEmail),
+            () => this.sendViaMailtoWithLocation(data, portfolioEmail),
+            () => this.sendViaMailtoSimple(data, portfolioEmail),
+            () => this.showEmailInstructions(data, portfolioEmail)
+        ];
+
+        let currentMethod = 0;
+
+        const tryNext = () => {
+            if (currentMethod < methods.length) {
+                try {
+                    const result = methods[currentMethod]();
+                    if (result !== false) {
+                        this.showNotification('Opening your email client...', 'success');
+                        this.resetForm(2000);
+                        return;
+                    }
+                } catch (error) {
+                    console.warn(`Email method ${currentMethod + 1} failed:`, error);
+                }
+                currentMethod++;
+                setTimeout(tryNext, 100);
+            } else {
+                this.showNotification('Unable to open email client. Message copied to clipboard instead.', 'error');
+                this.copyToClipboard();
+            }
+        };
+
+        tryNext();
+    }
+
+    sendViaMailtoWithWindow(data, portfolioEmail) {
+        const subject = encodeURIComponent(data.subject);
+        const body = this.createEmailBody(data);
         
-        this.showNotification('Opening your email client...', 'success');
-        this.resetForm(2000);
+        // Check if body is too long (mailto has limitations)
+        if (body.length > 1800) {
+            return false; // Try next method
+        }
+
+        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}&body=${encodeURIComponent(body)}`;
+        
+        // Try opening in new window first
+        const emailWindow = window.open(mailtoLink, '_self');
+        
+        // Check if window opened successfully
+        setTimeout(() => {
+            if (emailWindow && !emailWindow.closed) {
+                return true;
+            }
+        }, 100);
+        
+        return true;
+    }
+
+    sendViaMailtoWithLocation(data, portfolioEmail) {
+        const subject = encodeURIComponent(data.subject);
+        const shortBody = `From: ${data.name} (${data.email})\n\n${data.message}`;
+        
+        if (shortBody.length > 1500) {
+            return false; // Try next method
+        }
+
+        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}&body=${encodeURIComponent(shortBody)}`;
+        
+        try {
+            window.location.href = mailtoLink;
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    sendViaMailtoSimple(data, portfolioEmail) {
+        // Very simple mailto with just email and subject
+        const subject = encodeURIComponent(`Contact from ${data.name}: ${data.subject}`);
+        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}`;
+        
+        try {
+            // Create a hidden link and click it
+            const link = document.createElement('a');
+            link.href = mailtoLink;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show instructions for user to copy message
+            setTimeout(() => {
+                this.showEmailInstructions(data, portfolioEmail);
+            }, 500);
+            
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    showEmailInstructions(data, portfolioEmail) {
+        // Create a modal with email instructions
+        const modal = this.createEmailModal(data, portfolioEmail);
+        document.body.appendChild(modal);
+        return true;
+    }
+
+    createEmailBody(data) {
+        return `Hi!
+
+My name is ${data.name} and I'd like to get in touch.
+
+Subject: ${data.subject}
+
+Message:
+${data.message}
+
+Contact Information:
+- Name: ${data.name}
+- Email: ${data.email}
+- Date: ${new Date().toLocaleString()}
+
+Best regards,
+${data.name}
+
+---
+Sent from Portfolio Contact Form`;
+    }
+
+    createEmailModal(data, portfolioEmail) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            backdrop-filter: blur(5px);
+        `;
+
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: linear-gradient(135deg, var(--color-surface), var(--color-background));
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--color-primary);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        `;
+
+        const emailBody = this.createEmailBody(data);
+
+        modalContent.innerHTML = `
+            <h3 style="color: var(--color-primary); margin-bottom: 20px; text-align: center;">
+                📧 Email Instructions
+            </h3>
+            <p style="color: var(--color-text); margin-bottom: 15px; line-height: 1.6;">
+                Your email client should open automatically. If it doesn't, please:
+            </p>
+            <ol style="color: var(--color-text); margin-bottom: 20px; line-height: 1.6;">
+                <li>Send an email to: <strong style="color: var(--color-primary)">${portfolioEmail}</strong></li>
+                <li>Use this subject: <strong style="color: var(--color-primary)">${data.subject}</strong></li>
+                <li>Copy the message below:</li>
+            </ol>
+            
+            <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <pre style="color: var(--color-text); font-size: 14px; line-height: 1.4; white-space: pre-wrap; margin: 0;">${emailBody}</pre>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="copyEmailText" style="
+                    flex: 1;
+                    background: var(--color-primary);
+                    color: var(--color-background);
+                    border: none;
+                    padding: 10px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">📋 Copy Message</button>
+                <button id="openEmail" style="
+                    flex: 1;
+                    background: transparent;
+                    color: var(--color-primary);
+                    border: 2px solid var(--color-primary);
+                    padding: 10px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">📧 Try Email Again</button>
+                <button id="closeModal" style="
+                    background: transparent;
+                    color: #ff6b6b;
+                    border: 2px solid #ff6b6b;
+                    padding: 10px 15px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">✕</button>
+            </div>
+        `;
+
+        modal.appendChild(modalContent);
+
+        // Add event listeners
+        modalContent.querySelector('#copyEmailText').addEventListener('click', async () => {
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(emailBody);
+                } else {
+                    this.fallbackCopyToClipboard(emailBody);
+                }
+                this.showNotification('Message copied to clipboard!', 'success');
+            } catch (error) {
+                this.showNotification('Failed to copy message', 'error');
+            }
+        });
+
+        modalContent.querySelector('#openEmail').addEventListener('click', () => {
+            const simpleMailto = `mailto:${portfolioEmail}?subject=${encodeURIComponent(data.subject)}`;
+            window.location.href = simpleMailto;
+        });
+
+        modalContent.querySelector('#closeModal').addEventListener('click', () => {
+            document.body.removeChild(modal);
+            this.resetForm();
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+                this.resetForm();
+            }
+        });
+
+        return modal;
+    }
+
+    sendViaWhatsApp() {
+        if (!this.validateForm()) return;
+
+        const data = this.getFormData();
+        const message = `Hi! I'm ${data.name} and I'd like to get in touch.
+
+*Subject:* ${data.subject}
+
+*Message:*
+${data.message}
+
+*Contact Info:*
+📧 ${data.email}
+📅 ${new Date().toLocaleString()}
+
+Best regards,
+${data.name}`;
+
+        // Get phone number from contact data or use default
+        const phoneNumber = this.getPortfolioPhone();
+        
+        try {
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+            
+            this.showNotification('Opening WhatsApp...', 'success');
+            this.resetForm(2000);
+        } catch (error) {
+            this.showNotification('Failed to open WhatsApp. Message copied to clipboard instead.', 'error');
+            this.copyToClipboard();
+        }
+    }
+
+    getPortfolioPhone() {
+        // Try to get WhatsApp number from contact configuration first
+        if (this.portfolio && this.portfolio.config && this.portfolio.config.contact && this.portfolio.config.contact.whatsapp) {
+            return this.portfolio.config.contact.whatsapp.replace(/[^\d+]/g, '');
+        }
+        
+        // Try to get phone from contact configuration
+        const contactPhone = document.getElementById('contactPhone');
+        if (contactPhone && contactPhone.textContent !== 'Loading...') {
+            // Remove all non-numeric characters except +
+            return contactPhone.textContent.replace(/[^\d+]/g, '');
+        }
+        
+        // Try localStorage data
+        try {
+            const savedData = localStorage.getItem('portfolioData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.contact && data.contact.whatsapp) {
+                    return data.contact.whatsapp.replace(/[^\d+]/g, '');
+                }
+                if (data.contact && data.contact.phone) {
+                    return data.contact.phone.replace(/[^\d+]/g, '');
+                }
+            }
+        } catch (error) {
+            console.warn('Error getting phone from localStorage:', error);
+        }
+        
+        // Fallback - you can customize this
+        return '1234567890'; // Replace with actual phone number
     }
 
     async copyToClipboard() {
