@@ -1,4 +1,4 @@
-﻿class DashboardManager {
+class DashboardManager {
     constructor() {
         this.currentFile = 'colors';
         this.currentTab = 'form';
@@ -108,22 +108,20 @@
         };
     }
 
-    // Export data to JSON file
-    exportData(filename = null) {
+    // Export data to JSON file with folder selection
+    async exportData(filename = null) {
         const dataToExport = filename ? this.data[filename] : this.data;
         const exportName = filename || 'portfolio-complete';
 
-        const jsonString = JSON.stringify(dataToExport, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${exportName}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        // Try to save to user-selected location first
+        const saved = await this.saveToJsonFile(exportName, dataToExport);
+        
+        if (saved) {
+            this.showStatus(`${exportName}.json exported successfully to selected folder!`, 'success');
+        } else {
+            // Fallback message for download
+            this.showStatus(`${exportName}.json downloaded to default Downloads folder`, 'success');
+        }
     }
 
     // Import data from JSON file
@@ -262,6 +260,7 @@
                 `).join('')}
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -301,6 +300,7 @@
                 </div>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -351,6 +351,7 @@
                 <button class="add-btn" onclick="dashboard.addProject()">➕ Add New Project</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -382,6 +383,7 @@
                 <button class="add-btn" onclick="dashboard.addSkillCategory()">➕ Add New Category</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -405,6 +407,7 @@
                 </div>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -436,6 +439,7 @@
                 <button class="add-btn" onclick="dashboard.addSocialLink()">➕ Add New Link</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -787,8 +791,8 @@ function saveJSON() {
 }
 
 function previewPortfolio() {
-    // Export complete portfolio configuration
-    dashboard.exportData();
+    // Open portfolio in new tab
+    window.open('Portoflio/index.html', '_blank');
 }
 
 // Initialize dashboard

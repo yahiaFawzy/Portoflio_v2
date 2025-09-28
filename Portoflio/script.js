@@ -495,7 +495,7 @@ class PortfolioManager {
         particle.style.height = `${size}px`;
         particle.style.left = `${leftPosition}%`;
         particle.style.animationDuration = `${animationDuration}s`;
-        particle.style.background = this.config.colors.primary;
+        particle.style.background = this.config.colors.primary || 'var(--color-primary)';
 
         container.appendChild(particle);
 
@@ -559,7 +559,7 @@ class PortfolioManager {
                 ctx.rotate(shape.rotation);
 
                 // Use primary color from config
-                const primaryColor = this.config.colors.primary;
+                const primaryColor = this.config.colors.primary || '#64ffda';
                 ctx.strokeStyle = `${primaryColor}33`; // Add alpha
                 ctx.lineWidth = 2;
                 ctx.beginPath();
