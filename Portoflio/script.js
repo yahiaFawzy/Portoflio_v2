@@ -11,7 +11,8 @@ class PortfolioManager {
             timeline: [],
             stats: [],
             blogs: [],
-            sectionVisibility: {}
+            sectionVisibility: {},
+            timelineSettings: {}
         };
         this.isLoading = true;
         this.init();
@@ -43,6 +44,7 @@ class PortfolioManager {
                 this.config.stats = portfolioData.stats || this.getDefaultStats();
                 this.config.blogs = portfolioData.blogs || this.getDefaultBlogs();
                 this.config.sectionVisibility = portfolioData.sectionVisibility || this.getDefaultSectionVisibility();
+                this.config.timelineSettings = portfolioData.timelineSettings || this.getDefaultTimelineSettings();
 
                 console.log('Portfolio data loaded successfully from dashboard');
             } else {
@@ -161,24 +163,42 @@ class PortfolioManager {
             {
                 year: "2024",
                 title: "Senior Game Developer",
-                description: "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics."
+                description: "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics.",
+                visible: true,
+                size: "md"
             },
             {
                 year: "2022",
                 title: "Game Developer",
-                description: "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics."
+                description: "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics.",
+                visible: true,
+                size: "md"
             },
             {
                 year: "2020",
                 title: "Junior Developer",
-                description: "Started career in game development, working on mobile games and learning industry best practices."
+                description: "Started career in game development, working on mobile games and learning industry best practices.",
+                visible: true,
+                size: "md"
             },
             {
                 year: "2019",
                 title: "Computer Science Graduate",
-                description: "Graduated with honors, specializing in computer graphics and game development technologies."
+                description: "Graduated with honors, specializing in computer graphics and game development technologies.",
+                visible: true,
+                size: "md"
             }
         ];
+    }
+
+    getDefaultTimelineSettings() {
+        return {
+            compact: false,
+            fontScale: 1,
+            markerWidth: 120,
+            lineThickness: 3,
+            itemMargin: 40
+        };
     }
 
     getDefaultStats() {
@@ -266,6 +286,7 @@ class PortfolioManager {
         this.config.stats = this.getDefaultStats();
         this.config.blogs = this.getDefaultBlogs();
         this.config.sectionVisibility = this.getDefaultSectionVisibility();
+        this.config.timelineSettings = this.getDefaultTimelineSettings();
     }
 
     initializeComponents() {
@@ -431,6 +452,8 @@ class PortfolioManager {
                 if (visibility.hasOwnProperty(sectionId)) {
                     link.style.display = visibility[sectionId] ? 'block' : 'none';
                 }
+            } else if (href === 'blog.html' && visibility.hasOwnProperty('blog')) {
+                link.style.display = visibility.blog ? 'block' : 'none';
             }
         });
     }
@@ -546,12 +569,29 @@ class PortfolioManager {
 
     renderTimeline() {
         const container = document.getElementById('timelineItems');
-        if (!container) return;
+        const section = document.getElementById('timeline');
+        if (!container || !section) return;
 
-        const timeline = this.config.timeline;
+        // Apply global settings via CSS variables
+        const settings = this.config.timelineSettings || this.getDefaultTimelineSettings();
+        const fontScale = (settings && settings.fontScale != null) ? settings.fontScale : 1;
+        const markerWidth = (settings && settings.markerWidth != null) ? settings.markerWidth : 120;
+        const lineThickness = (settings && settings.lineThickness != null) ? settings.lineThickness : 3;
+        const itemMargin = (settings && settings.itemMargin != null) ? settings.itemMargin : 40;
+        section.classList.toggle('compact', !!(settings && settings.compact));
+        section.style.setProperty('--timeline-font-scale', fontScale);
+        section.style.setProperty('--timeline-marker-width', `${markerWidth}px`);
+        section.style.setProperty('--timeline-line-thickness', `${lineThickness}px`);
+        section.style.setProperty('--timeline-item-margin', `${itemMargin}px`);
 
-        container.innerHTML = timeline.map((item, index) => `
-            <div class="timeline-item fade-in" style="animation-delay: ${index * 0.2}s">
+        // Respect per-item visibility and size
+        const timeline = (this.config.timeline || []).filter(item => item.visible !== false);
+
+        container.innerHTML = timeline.map((item, index) => {
+            const size = (item.size || 'md').toLowerCase();
+            const delay = (index * 0.2).toFixed(2);
+            return `
+            <div class="timeline-item size-${size} fade-in" style="animation-delay: ${delay}s">
                 <div class="timeline-marker">
                     <div class="timeline-year">${item.year}</div>
                 </div>
@@ -559,8 +599,8 @@ class PortfolioManager {
                     <h3 class="timeline-title">${item.title}</h3>
                     <p class="timeline-description">${item.description}</p>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 
     renderStats() {

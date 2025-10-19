@@ -887,6 +887,14 @@ section {
     position: relative;
 }
 
+/* Dynamic timeline sizing via CSS variables */
+.timeline {
+    --timeline-font-scale: 1;
+    --timeline-marker-width: 120px;
+    --timeline-line-thickness: 3px;
+    --timeline-item-margin: 40px;
+}
+
 .timeline-content {
     position: relative;
     max-width: 800px;
@@ -904,7 +912,7 @@ section {
     left: 50%;
     top: 0;
     bottom: 0;
-    width: 3px;
+    width: var(--timeline-line-thickness);
     background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
     transform: translateX(-50%);
     border-radius: 2px;
@@ -912,7 +920,7 @@ section {
 
 .timeline-item {
     position: relative;
-    margin: 40px 0;
+    margin: var(--timeline-item-margin) 0;
     display: flex;
     align-items: center;
     opacity: 0;
@@ -927,7 +935,7 @@ section {
     position: relative;
     z-index: 2;
     flex-shrink: 0;
-    width: 120px;
+    width: var(--timeline-marker-width);
     display: flex;
     justify-content: center;
 }
@@ -935,10 +943,10 @@ section {
 .timeline-year {
     background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
     color: var(--color-background);
-    padding: 12px 20px;
+    padding: calc(12px * var(--timeline-font-scale)) calc(20px * var(--timeline-font-scale));
     border-radius: 25px;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: calc(1.1rem * var(--timeline-font-scale));
     box-shadow: 0 8px 25px rgba(100, 255, 218, 0.3);
     position: relative;
 }
@@ -963,8 +971,8 @@ section {
 
 .timeline-content {
     flex: 1;
-    padding: 0 40px;
-    max-width: 400px;
+    padding: 0 calc(40px * var(--timeline-font-scale));
+    max-width: calc(400px * var(--timeline-font-scale));
 }
 
 .timeline-item:nth-child(odd) .timeline-content {
@@ -976,7 +984,7 @@ section {
 }
 
 .timeline-title {
-    font-size: 1.5rem;
+    font-size: calc(1.5rem * var(--timeline-font-scale));
     font-weight: 700;
     color: var(--color-primary);
     margin-bottom: 10px;
@@ -989,7 +997,28 @@ section {
 .timeline-description {
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.6;
-    font-size: 1rem;
+    font-size: calc(1rem * var(--timeline-font-scale));
+}
+
+/* Compact mode for tighter spacing */
+.timeline.compact {
+    --timeline-font-scale: 0.85;
+    --timeline-marker-width: 90px;
+    --timeline-line-thickness: 2px;
+    --timeline-item-margin: 24px;
+}
+
+/* Per-item size modifiers */
+.timeline-item.size-sm {
+    --timeline-font-scale: 0.9;
+}
+
+.timeline-item.size-md {
+    --timeline-font-scale: 1;
+}
+
+.timeline-item.size-lg {
+    --timeline-font-scale: 1.15;
 }
 
 /* Stats Section */
