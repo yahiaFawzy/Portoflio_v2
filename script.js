@@ -48,7 +48,15 @@ class DashboardManager {
                 accent: "#ff6b6b",
                 background: "#0a0a0a",
                 surface: "#1a1a2e",
-                text: "#ffffff"
+                text: "#ffffff",
+                navbarBg: "rgba(10, 10, 10, 0.95)",
+                footerBg: "rgba(10, 10, 10, 0.9)",
+                cardBg: "rgba(26, 26, 46, 0.8)",
+                panelBg: "rgba(102, 126, 234, 0.1)",
+                border: "rgba(102, 126, 234, 0.2)",
+                mutedText: "rgba(255, 255, 255, 0.7)",
+                gradientStart: "#667eea",
+                gradientEnd: "#764ba2"
             },
             personal: {
                 name: "Alex Johnson",
@@ -105,13 +113,7 @@ class DashboardManager {
                 { name: "GitHub", url: "https://github.com", icon: "🔗" },
                 { name: "LinkedIn", url: "https://linkedin.com", icon: "💼" },
                 { name: "Twitter", url: "https://twitter.com", icon: "🐦" }
-            ],
-            timeline: [
-                { id: 1, year: "2024", title: "Senior Game Developer", description: "Leading development of next-gen VR experiences.", visible: true, size: "md" },
-                { id: 2, year: "2022", title: "Game Developer", description: "Developed multiple successful indie games.", visible: true, size: "md" }
-            ],
-            timelineSettings: { compact: false, fontScale: 1, markerWidth: 120, lineThickness: 3, itemMargin: 40 },
-            sectionVisibility: { home: true, about: true, projects: true, skills: true, timeline: true, stats: true, contact: true, blog: true }
+            ]
         };
     }
 
@@ -211,14 +213,12 @@ class DashboardManager {
     renderCurrentFile() {
         const titles = {
             colors: 'Colors Configuration',
+            visibility: 'Visibility & Layout',
             personal: 'Personal Data',
             projects: 'Projects',
             skills: 'Skills & Technologies',
             contact: 'Contact Information',
-            social: 'Social Links',
-            timeline: 'Timeline',
-            timelineSettings: 'Timeline Settings',
-            sectionVisibility: 'Sections Visibility'
+            social: 'Social Links'
         };
 
         document.getElementById('contentTitle').textContent = titles[this.currentFile];
@@ -235,6 +235,9 @@ class DashboardManager {
             case 'colors':
                 container.innerHTML = this.renderColorsForm(data);
                 break;
+            case 'visibility':
+                container.innerHTML = this.renderVisibilityForm();
+                break;
             case 'personal':
                 container.innerHTML = this.renderPersonalForm(data);
                 break;
@@ -250,116 +253,91 @@ class DashboardManager {
             case 'social':
                 container.innerHTML = this.renderSocialForm(data);
                 break;
-            case 'timeline':
-                container.innerHTML = this.renderTimelineForm(data);
-                break;
-            case 'timelineSettings':
-                container.innerHTML = this.renderTimelineSettingsForm(data);
-                break;
-            case 'sectionVisibility':
-                container.innerHTML = this.renderSectionVisibilityForm(data);
-                break;
         }
 
         this.bindFormEvents();
     }
 
-    renderTimelineForm(data) {
-        const list = (data || []);
+    renderVisibilityForm() {
+        // Initialize defaults if missing
+        if (!this.data.sectionVisibility) {
+            this.data.sectionVisibility = {
+                home: true,
+                about: true,
+                projects: true,
+                skills: true,
+                timeline: true,
+                stats: true,
+                contact: true,
+                blog: true,
+                header: true
+            };
+        }
+
+        const sectionVisibility = this.data.sectionVisibility;
+
+        // Item-level toggles within sections
+        const aboutItems = [
+            { key: 'showExperience', label: 'About: Years Experience' },
+            { key: 'showProjectsCompleted', label: 'About: Projects Completed' },
+            { key: 'showAwards', label: 'About: Awards Won' }
+        ];
+
+        if (!this.data.visibilityOptions) {
+            this.data.visibilityOptions = {
+                about: {
+                    showExperience: true,
+                    showProjectsCompleted: true,
+                    showAwards: true
+                },
+                header: {
+                    showBlogLink: true,
+                    showDashboardLink: true
+                }
+            };
+        }
+
+        const v = this.data.visibilityOptions;
+
         return `
             <div class="form-section">
-                <h3 class="form-section-title">🕒 Timeline</h3>
-                <div id="timelineList">
-                    ${list.map((item, index) => `
-                        <div class="timeline-item-edit" data-index="${index}" style="margin-bottom: 20px; padding: 15px; background: rgba(10,10,10,0.3); border-radius: 8px;">
-                            <div class="form-group">
-                                <label class="form-label">Year</label>
-                                <input type="text" class="form-input" value="${item.year || ''}" data-field="year" data-index="${index}">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Title</label>
-                                <input type="text" class="form-input" value="${item.title || ''}" data-field="title" data-index="${index}">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-input form-textarea" data-field="description" data-index="${index}">${item.description || ''}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <input type="checkbox" ${item.visible !== false ? 'checked' : ''} data-field="visible" data-index="${index}" style="margin-right: 8px;">
-                                    Visible
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Size</label>
-                                <select class="form-input" data-field="size" data-index="${index}">
-                                    ${['sm','md','lg'].map(s => `<option value="${s}" ${((item.size||'md')===s)?'selected':''}>${s.toUpperCase()}</option>`).join('')}
-                                </select>
-                            </div>
-                            <button class="remove-btn" onclick="dashboard.removeTimelineItem(${index})">🗑️ Remove Item</button>
-                        </div>
+                <h3 class="form-section-title">👁️ Section Visibility</h3>
+                <div class="form-group">
+                    ${Object.entries(sectionVisibility).map(([key, val]) => `
+                        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+                            <input type="checkbox" ${val ? 'checked' : ''} data-type="sectionVisibility" data-field="${key}">
+                            ${key.charAt(0).toUpperCase() + key.slice(1)}
+                        </label>
                     `).join('')}
                 </div>
-                <button class="add-btn" onclick="dashboard.addTimelineItem()">➕ Add Timeline Item</button>
-                <div class="editor-actions">
-                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
-                </div>
-            </div>
-        `;
-    }
 
-    renderTimelineSettingsForm(data) {
-        const settings = data || { compact: false, fontScale: 1, markerWidth: 120, lineThickness: 3, itemMargin: 40 };
-        return `
-            <div class="form-section">
-                <h3 class="form-section-title">⚙️ Timeline Settings</h3>
-                <div class="form-group">
-                    <label class="form-label">
-                        <input type="checkbox" ${settings.compact ? 'checked' : ''} data-field="compact"> Compact Mode
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Font Scale</label>
-                    <input type="number" class="form-input" value="${settings.fontScale}" data-field="fontScale" step="0.05" min="0.6" max="2">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Marker Width (px)</label>
-                    <input type="number" class="form-input" value="${settings.markerWidth}" data-field="markerWidth" min="60" max="240">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Line Thickness (px)</label>
-                    <input type="number" class="form-input" value="${settings.lineThickness}" data-field="lineThickness" min="1" max="8">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Item Vertical Margin (px)</label>
-                    <input type="number" class="form-input" value="${settings.itemMargin}" data-field="itemMargin" min="8" max="120">
-                </div>
-                <div class="editor-actions">
-                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
-                </div>
-            </div>
-        `;
-    }
-
-    renderSectionVisibilityForm(data) {
-        const visibility = data || {};
-        const sections = ['home','about','projects','skills','timeline','stats','contact','blog'];
-        return `
-            <div class="form-section">
-                <h3 class="form-section-title">👁️ Sections Visibility</h3>
-                ${sections.map(sectionId => `
-                    <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" ${visibility[sectionId] !== false ? 'checked' : ''} data-field="${sectionId}">
-                            ${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}
+                <h3 class="form-section-title" style="margin-top:24px;">🎛️ Item Visibility</h3>
+                <div class="form-group" style="padding:12px 16px;background:rgba(10,10,10,0.3);border-radius:10px;">
+                    <div style="font-weight:600;margin-bottom:8px;color:#64ffda;">About Section</div>
+                    ${aboutItems.map(it => `
+                        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+                            <input type="checkbox" ${v.about[it.key] ? 'checked' : ''} data-type="visibilityOptions" data-scope="about" data-field="${it.key}">
+                            ${it.label}
                         </label>
-                    </div>
-                `).join('')}
+                    `).join('')}
+                </div>
+
+                <div class="form-group" style="padding:12px 16px;background:rgba(10,10,10,0.3);border-radius:10px;margin-top:12px;">
+                    <div style="font-weight:600;margin-bottom:8px;color:#64ffda;">Header</div>
+                    ${[
+                        { key: 'showBlogLink', label: 'Show Blog link' },
+                        { key: 'showDashboardLink', label: 'Show Dashboard link' }
+                    ].map(it => `
+                        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+                            <input type="checkbox" ${v.header[it.key] ? 'checked' : ''} data-type="visibilityOptions" data-scope="header" data-field="${it.key}">
+                            ${it.label}
+                        </label>
+                    `).join('')}
+                </div>
+
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData('sectionVisibility')">📤 Export Section Visibility</button>
                 </div>
             </div>
         `;
@@ -643,6 +621,9 @@ class DashboardManager {
                 case 'colors':
                     this.saveColorsData();
                     break;
+                case 'visibility':
+                    this.saveVisibilityData();
+                    break;
                 case 'personal':
                     this.savePersonalData();
                     break;
@@ -657,15 +638,6 @@ class DashboardManager {
                     break;
                 case 'social':
                     this.saveSocialData();
-                    break;
-                case 'timeline':
-                    this.saveTimelineData();
-                    break;
-                case 'timelineSettings':
-                    this.saveTimelineSettingsData();
-                    break;
-                case 'sectionVisibility':
-                    this.saveSectionVisibilityData();
                     break;
             }
 
@@ -690,6 +662,25 @@ class DashboardManager {
         const inputs = document.querySelectorAll('#formEditor input[data-field]');
         inputs.forEach(input => {
             this.data.colors[input.dataset.field] = input.value;
+        });
+    }
+
+    saveVisibilityData() {
+        // Sections
+        const sectionInputs = document.querySelectorAll('#formEditor input[data-type="sectionVisibility"]');
+        if (!this.data.sectionVisibility) this.data.sectionVisibility = {};
+        sectionInputs.forEach(input => {
+            this.data.sectionVisibility[input.dataset.field] = input.checked;
+        });
+
+        // Items
+        if (!this.data.visibilityOptions) this.data.visibilityOptions = {};
+        const itemInputs = document.querySelectorAll('#formEditor input[data-type="visibilityOptions"]');
+        itemInputs.forEach(input => {
+            const scope = input.dataset.scope;
+            const field = input.dataset.field;
+            if (!this.data.visibilityOptions[scope]) this.data.visibilityOptions[scope] = {};
+            this.data.visibilityOptions[scope][field] = input.checked;
         });
     }
 
@@ -777,63 +768,28 @@ class DashboardManager {
         this.data.social = social;
     }
 
-    saveTimelineData() {
-        const items = [];
-        const timelineItems = document.querySelectorAll('.timeline-item-edit');
-        timelineItems.forEach((el, index) => {
-            const inputs = el.querySelectorAll('[data-index]');
-            const item = {};
-            inputs.forEach(input => {
-                const field = input.dataset.field;
-                if (field === 'visible') {
-                    item.visible = input.checked;
-                } else if (field === 'size') {
-                    item.size = input.value;
-                } else {
-                    item[field] = input.value;
-                }
-            });
-            // fallback defaults
-            if (!item.size) item.size = 'md';
-            if (item.visible === undefined) item.visible = true;
-            items.push(item);
-        });
-        this.data.timeline = items;
-    }
-
-    saveTimelineSettingsData() {
-        const settings = {};
-        const inputs = document.querySelectorAll('#formEditor [data-field]');
-        inputs.forEach(input => {
-            const field = input.dataset.field;
-            if (input.type === 'checkbox') {
-                settings[field] = input.checked;
-            } else if (input.type === 'number') {
-                settings[field] = Number(input.value);
-            } else {
-                settings[field] = input.value;
-            }
-        });
-        this.data.timelineSettings = settings;
-    }
-
-    saveSectionVisibilityData() {
-        const visibility = {};
-        const inputs = document.querySelectorAll('#formEditor input[type="checkbox"][data-field]');
-        inputs.forEach(input => {
-            visibility[input.dataset.field] = input.checked;
-        });
-        this.data.sectionVisibility = visibility;
-    }
-
     updateJSONEditor() {
         const editor = document.getElementById('jsonEditor');
-        editor.value = JSON.stringify(this.data[this.currentFile], null, 2);
+        let dataForEditor = this.data[this.currentFile];
+        if (this.currentFile === 'visibility') {
+            dataForEditor = {
+                sectionVisibility: this.data.sectionVisibility || {},
+                visibilityOptions: this.data.visibilityOptions || {}
+            };
+        }
+        editor.value = JSON.stringify(dataForEditor, null, 2);
     }
 
     updatePreview() {
         const preview = document.getElementById('jsonPreview');
-        preview.innerHTML = this.syntaxHighlight(JSON.stringify(this.data[this.currentFile], null, 2));
+        let dataForPreview = this.data[this.currentFile];
+        if (this.currentFile === 'visibility') {
+            dataForPreview = {
+                sectionVisibility: this.data.sectionVisibility || {},
+                visibilityOptions: this.data.visibilityOptions || {}
+            };
+        }
+        preview.innerHTML = this.syntaxHighlight(JSON.stringify(dataForPreview, null, 2));
     }
 
     syntaxHighlight(json) {
@@ -921,22 +877,6 @@ class DashboardManager {
         this.renderCurrentFile();
     }
 
-    // Timeline management methods
-    addTimelineItem() {
-        const newItem = { year: new Date().getFullYear().toString(), title: 'New Role', description: 'Description...', visible: true, size: 'md' };
-        if (!Array.isArray(this.data.timeline)) this.data.timeline = [];
-        this.data.timeline.push(newItem);
-        this.renderCurrentFile();
-    }
-
-    removeTimelineItem(index) {
-        if (!Array.isArray(this.data.timeline)) return;
-        if (confirm('Are you sure you want to remove this timeline item?')) {
-            this.data.timeline.splice(index, 1);
-            this.renderCurrentFile();
-        }
-    }
-
     removeSocialLink(index) {
         if (confirm('Are you sure you want to remove this social link?')) {
             this.data.social.splice(index, 1);
@@ -971,7 +911,12 @@ function saveJSON() {
     const editor = document.getElementById('jsonEditor');
     try {
         const parsed = JSON.parse(editor.value);
-        dashboard.data[dashboard.currentFile] = parsed;
+        if (dashboard.currentFile === 'visibility') {
+            dashboard.data.sectionVisibility = parsed.sectionVisibility || {};
+            dashboard.data.visibilityOptions = parsed.visibilityOptions || {};
+        } else {
+            dashboard.data[dashboard.currentFile] = parsed;
+        }
 
         // Save to localStorage
         const saved = dashboard.saveDataToStorage();

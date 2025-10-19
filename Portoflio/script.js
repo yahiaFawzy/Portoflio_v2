@@ -11,7 +11,8 @@ class PortfolioManager {
             timeline: [],
             stats: [],
             blogs: [],
-            sectionVisibility: {}
+            sectionVisibility: {},
+            visibilityOptions: {}
         };
         this.isLoading = true;
         this.init();
@@ -43,6 +44,7 @@ class PortfolioManager {
                 this.config.stats = portfolioData.stats || this.getDefaultStats();
                 this.config.blogs = portfolioData.blogs || this.getDefaultBlogs();
                 this.config.sectionVisibility = portfolioData.sectionVisibility || this.getDefaultSectionVisibility();
+                this.config.visibilityOptions = portfolioData.visibilityOptions || this.getDefaultVisibilityOptions();
 
                 console.log('Portfolio data loaded successfully from dashboard');
             } else {
@@ -63,7 +65,15 @@ class PortfolioManager {
             accent: "#ff6b6b",
             background: "#0a0a0a",
             surface: "#1a1a2e",
-            text: "#ffffff"
+            text: "#ffffff",
+            navbarBg: "rgba(10, 10, 10, 0.95)",
+            footerBg: "rgba(10, 10, 10, 0.9)",
+            cardBg: "rgba(26, 26, 46, 0.8)",
+            panelBg: "rgba(102, 126, 234, 0.1)",
+            border: "rgba(102, 126, 234, 0.2)",
+            mutedText: "rgba(255, 255, 255, 0.7)",
+            gradientStart: "#667eea",
+            gradientEnd: "#764ba2"
         };
     }
 
@@ -259,7 +269,22 @@ class PortfolioManager {
             timeline: true,
             stats: true,
             contact: true,
-            blog: true
+            blog: true,
+            header: true
+        };
+    }
+
+    getDefaultVisibilityOptions() {
+        return {
+            about: {
+                showExperience: true,
+                showProjectsCompleted: true,
+                showAwards: true
+            },
+            header: {
+                showBlogLink: true,
+                showDashboardLink: true
+            }
         };
     }
 
@@ -274,6 +299,7 @@ class PortfolioManager {
         this.config.stats = this.getDefaultStats();
         this.config.blogs = this.getDefaultBlogs();
         this.config.sectionVisibility = this.getDefaultSectionVisibility();
+        this.config.visibilityOptions = this.getDefaultVisibilityOptions();
     }
 
     initializeComponents() {
@@ -421,6 +447,7 @@ class PortfolioManager {
 
     applySectionVisibility() {
         const visibility = this.config.sectionVisibility;
+        const itemVisibility = this.config.visibilityOptions || {};
         
         // Handle sections
         Object.entries(visibility).forEach(([sectionId, isVisible]) => {
@@ -441,6 +468,35 @@ class PortfolioManager {
                 }
             }
         });
+
+        // Header-only links
+        const blogLink = document.querySelector('.nav-menu a[href="blog.html"]');
+        if (blogLink) {
+            const allowed = (visibility.header !== false) && (!itemVisibility.header || itemVisibility.header.showBlogLink !== false);
+            blogLink.style.display = allowed ? '' : 'none';
+        }
+        const dashboardLink = document.querySelector('.nav-menu a[href="dashboard.html"]');
+        if (dashboardLink) {
+            const allowed = (visibility.header !== false) && (!itemVisibility.header || itemVisibility.header.showDashboardLink !== false);
+            dashboardLink.style.display = allowed ? '' : 'none';
+        }
+
+        // About stats items
+        const expEl = document.getElementById('experienceYears')?.closest('.stat-item');
+        if (expEl) {
+            const show = !itemVisibility.about || itemVisibility.about.showExperience !== false;
+            expEl.style.display = show ? '' : 'none';
+        }
+        const projEl = document.getElementById('projectsCount')?.closest('.stat-item');
+        if (projEl) {
+            const show = !itemVisibility.about || itemVisibility.about.showProjectsCompleted !== false;
+            projEl.style.display = show ? '' : 'none';
+        }
+        const awardsEl = document.getElementById('awardsCount')?.closest('.stat-item');
+        if (awardsEl) {
+            const show = !itemVisibility.about || itemVisibility.about.showAwards !== false;
+            awardsEl.style.display = show ? '' : 'none';
+        }
     }
 
     populatePersonalData() {
@@ -989,7 +1045,8 @@ function scrollToSection(sectionId) {
             timeline: this.config.timeline,
             stats: this.config.stats,
             blogs: this.config.blogs,
-            sectionVisibility: this.config.sectionVisibility
+            sectionVisibility: this.config.sectionVisibility,
+            visibilityOptions: this.config.visibilityOptions
         };
         
         localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
