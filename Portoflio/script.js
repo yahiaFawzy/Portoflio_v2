@@ -96,7 +96,7 @@ class PortfolioManager {
             const data = await response.json();
 
             console.log('2');
-            console.log(data.about);
+            console.log(data.personal.about);
 
 
             // Map JSON data to config
