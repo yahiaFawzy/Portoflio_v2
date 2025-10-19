@@ -30,6 +30,7 @@ class PortfolioManager {
 
                 // Map dashboard structure to portfolio structure
                 this.config.colors = portfolioData.colors || this.getDefaultColors();
+                this.config.visibility = portfolioData.visibility || this.getDefaultVisibility();
                 this.config.personal = portfolioData.personal || this.getDefaultPersonalData();
                 this.config.projects = portfolioData.projects || this.getDefaultProjects();
                 this.config.skills = portfolioData.skills || this.getDefaultSkills();
@@ -55,7 +56,76 @@ class PortfolioManager {
             accent: "#ff6b6b",
             background: "#0a0a0a",
             surface: "#1a1a2e",
-            text: "#ffffff"
+            text: "#ffffff",
+            success: "#4caf50",
+            warning: "#ff9800",
+            error: "#f44336",
+            info: "#2196f3",
+            muted: "#6c757d",
+            light: "#f8f9fa",
+            dark: "#343a40",
+            gradientStart: "#667eea",
+            gradientEnd: "#764ba2",
+            border: "rgba(100, 255, 218, 0.2)",
+            shadow: "rgba(0, 0, 0, 0.3)",
+            primaryHover: "#4fd3b8",
+            secondaryHover: "#5a6fd8",
+            accentHover: "#ff5252"
+        };
+    }
+
+    getDefaultVisibility() {
+        return {
+            header: {
+                logo: true,
+                navigation: true,
+                dashboardLink: true,
+                mobileMenu: true
+            },
+            hero: {
+                title: true,
+                subtitle: true,
+                buttons: true,
+                scrollIndicator: true,
+                backgroundCanvas: true
+            },
+            about: {
+                title: true,
+                description: true,
+                profileImage: true,
+                experienceYears: true,
+                projectsCompleted: true,
+                awards: true
+            },
+            projects: {
+                title: true,
+                projectGrid: true,
+                featuredOnly: true
+            },
+            skills: {
+                title: true,
+                categories: true,
+                icons: true
+            },
+            contact: {
+                title: true,
+                contactInfo: true,
+                email: true,
+                phone: true,
+                location: true,
+                contactForm: true,
+                socialLinks: true
+            },
+            footer: {
+                copyright: true,
+                socialLinks: true
+            },
+            effects: {
+                particles: true,
+                scrollAnimations: true,
+                loadingScreen: true,
+                glitchEffect: true
+            }
         };
     }
 
@@ -150,6 +220,7 @@ class PortfolioManager {
 
     loadDefaults() {
         this.config.colors = this.getDefaultColors();
+        this.config.visibility = this.getDefaultVisibility();
         this.config.personal = this.getDefaultPersonalData();
         this.config.projects = this.getDefaultProjects();
         this.config.skills = this.getDefaultSkills();
@@ -159,6 +230,7 @@ class PortfolioManager {
 
     initializeComponents() {
         this.applyColors();
+        this.applyVisibilitySettings();
         this.populatePersonalData();
         this.renderProjects();
         this.renderSkills();
@@ -219,6 +291,7 @@ class PortfolioManager {
 
     refreshPortfolio() {
         this.applyColors();
+        this.applyVisibilitySettings();
         this.populatePersonalData();
         this.renderProjects();
         this.renderSkills();
@@ -298,6 +371,117 @@ class PortfolioManager {
         });
     }
 
+    applyVisibilitySettings() {
+        const visibility = this.config.visibility;
+
+        // Header elements
+        this.toggleElement('.nav-logo', visibility.header?.logo);
+        this.toggleElement('.nav-menu li:not(:last-child)', visibility.header?.navigation);
+        this.toggleElement('.dashboard-link', visibility.header?.dashboardLink);
+        this.toggleElement('.hamburger', visibility.header?.mobileMenu);
+
+        // Hero elements
+        this.toggleElement('.hero-title', visibility.hero?.title);
+        this.toggleElement('.hero-subtitle', visibility.hero?.subtitle);
+        this.toggleElement('.hero-buttons', visibility.hero?.buttons);
+        this.toggleElement('.scroll-indicator', visibility.hero?.scrollIndicator);
+        this.toggleElement('#gameCanvas', visibility.hero?.backgroundCanvas);
+
+        // About elements
+        this.toggleElement('#about .section-title', visibility.about?.title);
+        this.toggleElement('#aboutDescription', visibility.about?.description);
+        this.toggleElement('.about-image', visibility.about?.profileImage);
+        this.toggleElement('.stat-item:nth-child(1)', visibility.about?.experienceYears);
+        this.toggleElement('.stat-item:nth-child(2)', visibility.about?.projectsCompleted);
+        this.toggleElement('.stat-item:nth-child(3)', visibility.about?.awards);
+
+        // Projects elements
+        this.toggleElement('#projects .section-title', visibility.projects?.title);
+        this.toggleElement('.projects-grid', visibility.projects?.projectGrid);
+
+        // Skills elements
+        this.toggleElement('#skills .section-title', visibility.skills?.title);
+        this.toggleElement('.skills-categories', visibility.skills?.categories);
+        
+        // Contact elements
+        this.toggleElement('#contact .section-title', visibility.contact?.title);
+        this.toggleElement('.contact-info', visibility.contact?.contactInfo);
+        this.toggleElement('.contact-item:nth-child(1)', visibility.contact?.email);
+        this.toggleElement('.contact-item:nth-child(2)', visibility.contact?.phone);
+        this.toggleElement('.contact-item:nth-child(3)', visibility.contact?.location);
+        this.toggleElement('.contact-form', visibility.contact?.contactForm);
+
+        // Footer elements
+        this.toggleElement('.footer-text', visibility.footer?.copyright);
+        this.toggleElement('.footer .social-links', visibility.footer?.socialLinks);
+
+        // Effects
+        this.toggleElement('#particles', visibility.effects?.particles);
+        this.toggleElement('#loading', visibility.effects?.loadingScreen);
+
+        // Handle skill icons
+        if (visibility.skills?.icons === false) {
+            document.querySelectorAll('.category-icon').forEach(el => {
+                el.style.display = 'none';
+            });
+        } else {
+            document.querySelectorAll('.category-icon').forEach(el => {
+                el.style.display = '';
+            });
+        }
+
+        // Handle glitch effect
+        if (visibility.effects?.glitchEffect === false) {
+            document.querySelectorAll('.glitch').forEach(el => {
+                el.classList.remove('glitch');
+            });
+        } else {
+            document.querySelectorAll('.hero-title').forEach(el => {
+                el.classList.add('glitch');
+            });
+        }
+
+        // Handle scroll animations
+        if (visibility.effects?.scrollAnimations === false) {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.classList.remove('fade-in');
+            });
+        }
+
+        // Hide entire sections if all their content is hidden
+        this.toggleSection('about', visibility.about);
+        this.toggleSection('projects', visibility.projects);
+        this.toggleSection('skills', visibility.skills);
+        this.toggleSection('contact', visibility.contact);
+    }
+
+    toggleElement(selector, isVisible) {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            if (isVisible === false) {
+                el.style.display = 'none';
+            } else {
+                el.style.display = '';
+            }
+        });
+    }
+
+    toggleSection(sectionId, sectionVisibility) {
+        if (!sectionVisibility) return;
+        
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+
+        // Check if any item in the section is visible
+        const hasVisibleContent = Object.values(sectionVisibility).some(value => value !== false);
+        
+        if (!hasVisibleContent) {
+            section.style.display = 'none';
+        } else {
+            section.style.display = '';
+        }
+    }
+
     populatePersonalData() {
         const data = this.config.personal;
 
@@ -366,7 +550,11 @@ class PortfolioManager {
         const container = document.getElementById('projectsGrid');
         if (!container) return;
 
-        const projects = this.config.projects.filter(p => p.featured).slice(0, 6);
+        // Respect the featuredOnly visibility setting
+        const showFeaturedOnly = this.config.visibility?.projects?.featuredOnly !== false;
+        const projects = showFeaturedOnly 
+            ? this.config.projects.filter(p => p.featured).slice(0, 6)
+            : this.config.projects.slice(0, 6);
 
         container.innerHTML = projects.map(project => `
             <div class="project-card fade-in">
@@ -469,6 +657,11 @@ class PortfolioManager {
         const container = document.getElementById('particles');
         if (!container) return;
 
+        // Check if particles are enabled
+        if (this.config.visibility?.effects?.particles === false) {
+            return;
+        }
+
         const particleCount = 50;
 
         for (let i = 0; i < particleCount; i++) {
@@ -510,6 +703,12 @@ class PortfolioManager {
     initializeCanvasBackground() {
         const canvas = document.getElementById('gameCanvas');
         if (!canvas) return;
+
+        // Check if background canvas is enabled
+        if (this.config.visibility?.hero?.backgroundCanvas === false) {
+            canvas.style.display = 'none';
+            return;
+        }
 
         const ctx = canvas.getContext('2d');
 
@@ -576,6 +775,11 @@ class PortfolioManager {
     }
 
     initializeScrollAnimations() {
+        // Check if scroll animations are enabled
+        if (this.config.visibility?.effects?.scrollAnimations === false) {
+            return;
+        }
+
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -596,6 +800,16 @@ class PortfolioManager {
     }
 
     hideLoadingScreen() {
+        // Check if loading screen is enabled
+        if (this.config.visibility?.effects?.loadingScreen === false) {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.style.display = 'none';
+                this.isLoading = false;
+            }
+            return;
+        }
+
         setTimeout(() => {
             const loading = document.getElementById('loading');
             if (loading) {

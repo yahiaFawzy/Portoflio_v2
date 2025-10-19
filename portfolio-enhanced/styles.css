@@ -354,6 +354,211 @@ body {
     }
 }
 
+/* Enhanced Color Form Styles */
+.form-description {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 25px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.color-group {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(10, 10, 10, 0.4);
+    border-radius: 10px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+.color-group-title {
+    color: #64ffda;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.color-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.color-label {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.color-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.color-text-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: rgba(10, 10, 10, 0.6);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 12px;
+    font-family: 'Fira Code', monospace;
+}
+
+.color-presets, .visibility-presets {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.preset-btn {
+    padding: 8px 16px;
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    border-radius: 6px;
+    color: #64ffda;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.preset-btn:hover {
+    background: rgba(100, 255, 218, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Visibility Form Styles */
+.visibility-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(10, 10, 10, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+.visibility-section-title {
+    color: #64ffda;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.section-icon {
+    font-size: 1.2rem;
+}
+
+.toggle-all-btn {
+    padding: 4px 12px;
+    background: rgba(102, 126, 234, 0.2);
+    border: 1px solid rgba(102, 126, 234, 0.4);
+    border-radius: 4px;
+    color: #667eea;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.toggle-all-btn:hover {
+    background: rgba(102, 126, 234, 0.3);
+}
+
+.visibility-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.visibility-item {
+    display: flex;
+    align-items: center;
+}
+
+.visibility-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.visibility-label:hover {
+    background: rgba(100, 255, 218, 0.1);
+}
+
+.visibility-checkbox {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(100, 255, 218, 0.4);
+    border-radius: 3px;
+    position: relative;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.visibility-checkbox:checked + .checkbox-custom {
+    background: #64ffda;
+    border-color: #64ffda;
+}
+
+.visibility-checkbox:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.item-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+/* Enhanced responsive design */
+@media (max-width: 1200px) {
+    .color-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    
+    .visibility-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
@@ -370,5 +575,23 @@ body {
 
     .editor-actions {
         flex-direction: column;
+    }
+    
+    .color-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .visibility-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .preset-buttons {
+        flex-direction: column;
+    }
+    
+    .visibility-section-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 }
