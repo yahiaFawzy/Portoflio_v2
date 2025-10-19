@@ -85,7 +85,7 @@ class PortfolioManager {
             console.log('📄 Loading data from portfolio-complete.json...');
             
             // Load from JSON file
-            const response = await fetch('portfolio-complete.json');
+            const response = await fetch('./portfolio-complete.json?nocache=' + Date.now());
 
 
             if (!response.ok) {
