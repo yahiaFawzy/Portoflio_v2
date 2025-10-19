@@ -875,17 +875,6 @@ class PortfolioManager {
             }
         }, 2000);
     }
-}
-
-// Utility Functions
-function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
-// Contact form and sending functionality removed as requested
 
     // Timeline Management Methods
     renderTimelineToggles() {
@@ -1050,6 +1039,14 @@ function scrollToSection(sectionId) {
         };
         
         localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
+    }
+}
+
+// Utility Functions
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
