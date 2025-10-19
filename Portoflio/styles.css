@@ -887,6 +887,226 @@ section {
     position: relative;
 }
 
+/* Timeline Controls */
+.timeline-controls {
+    background: rgba(26, 26, 46, 0.6);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 30px 0;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.timeline-settings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: center;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-label {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeline-control {
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    border-radius: 8px;
+    color: var(--color-text);
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.timeline-control:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px rgba(100, 255, 218, 0.2);
+}
+
+.timeline-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(100, 255, 218, 0.3);
+}
+
+.timeline-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(100, 255, 218, 0.3);
+}
+
+.slider-value {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+    min-width: 40px;
+}
+
+.btn-add-section {
+    background: linear-gradient(45deg, var(--color-secondary), var(--color-primary));
+    color: var(--color-background);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-add-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(100, 255, 218, 0.3);
+}
+
+.timeline-visibility {
+    background: rgba(16, 33, 62, 0.5);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+.timeline-visibility h4 {
+    color: var(--color-primary);
+    margin-bottom: 15px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.timeline-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.timeline-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(26, 26, 46, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    transition: all 0.3s ease;
+}
+
+.timeline-toggle:hover {
+    background: rgba(26, 26, 46, 0.6);
+    border-color: rgba(100, 255, 218, 0.2);
+}
+
+.toggle-label {
+    color: var(--color-text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-switch.active {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active::before {
+    transform: translateX(20px);
+}
+
+/* Timeline Size Variations */
+.timeline-items.compact {
+    --timeline-spacing: 20px;
+    --timeline-font-size: 0.85rem;
+    --timeline-title-size: 1.2rem;
+    --timeline-year-padding: 8px 12px;
+    --timeline-content-padding: 15px;
+}
+
+.timeline-items.normal {
+    --timeline-spacing: 40px;
+    --timeline-font-size: 1rem;
+    --timeline-title-size: 1.5rem;
+    --timeline-year-padding: 12px 20px;
+    --timeline-content-padding: 25px;
+}
+
+.timeline-items.large {
+    --timeline-spacing: 60px;
+    --timeline-font-size: 1.1rem;
+    --timeline-title-size: 1.7rem;
+    --timeline-year-padding: 15px 25px;
+    --timeline-content-padding: 30px;
+}
+
+.timeline-items {
+    --timeline-spacing: 40px;
+    --timeline-font-size: 1rem;
+    --timeline-title-size: 1.5rem;
+    --timeline-year-padding: 12px 20px;
+    --timeline-content-padding: 25px;
+}
+
 .timeline-content {
     position: relative;
     max-width: 800px;
@@ -912,11 +1132,23 @@ section {
 
 .timeline-item {
     position: relative;
-    margin: 40px 0;
+    margin: var(--timeline-spacing) 0;
     display: flex;
     align-items: center;
     opacity: 0;
     animation: fadeInUp 0.6s ease forwards;
+    transition: all 0.3s ease;
+}
+
+.timeline-item.hidden {
+    display: none !important;
+}
+
+.timeline-item.editing {
+    background: rgba(100, 255, 218, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    margin: calc(var(--timeline-spacing) + 10px) 0;
 }
 
 .timeline-item:nth-child(even) {
@@ -935,10 +1167,10 @@ section {
 .timeline-year {
     background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
     color: var(--color-background);
-    padding: 12px 20px;
+    padding: var(--timeline-year-padding);
     border-radius: 25px;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: var(--timeline-font-size);
     box-shadow: 0 8px 25px rgba(100, 255, 218, 0.3);
     position: relative;
 }
@@ -963,7 +1195,7 @@ section {
 
 .timeline-content {
     flex: 1;
-    padding: 0 40px;
+    padding: 0 var(--timeline-content-padding);
     max-width: 400px;
 }
 
@@ -976,7 +1208,7 @@ section {
 }
 
 .timeline-title {
-    font-size: 1.5rem;
+    font-size: var(--timeline-title-size);
     font-weight: 700;
     color: var(--color-primary);
     margin-bottom: 10px;
@@ -984,12 +1216,52 @@ section {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    position: relative;
+    display: inline-block;
+}
+
+.timeline-title .edit-controls {
+    position: absolute;
+    top: -5px;
+    right: -80px;
+    display: none;
+    gap: 5px;
+}
+
+.timeline-item:hover .timeline-title .edit-controls {
+    display: flex;
+}
+
+.edit-btn {
+    background: rgba(100, 255, 218, 0.2);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    color: var(--color-primary);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+    background: rgba(100, 255, 218, 0.3);
+    transform: scale(1.05);
+}
+
+.delete-btn {
+    background: rgba(255, 107, 107, 0.2);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    color: #ff6b6b;
+}
+
+.delete-btn:hover {
+    background: rgba(255, 107, 107, 0.3);
 }
 
 .timeline-description {
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.6;
-    font-size: 1rem;
+    font-size: var(--timeline-font-size);
 }
 
 /* Stats Section */
@@ -1403,6 +1675,24 @@ section {
         text-align: left !important;
         padding: 0 20px;
         max-width: none;
+    }
+
+    .timeline-controls {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .timeline-settings {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .control-group {
+        align-items: stretch;
+    }
+
+    .timeline-visibility {
+        order: -1;
     }
 
     .stats-grid {
