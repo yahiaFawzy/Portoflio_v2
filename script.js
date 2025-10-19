@@ -324,6 +324,7 @@ class DashboardManager {
         const sections = {
             'Header Section': {
                 icon: '🔝',
+                key: 'header',
                 items: {
                     logo: 'Logo/Brand',
                     navigation: 'Navigation Menu',
@@ -333,6 +334,7 @@ class DashboardManager {
             },
             'Hero Section': {
                 icon: '🎯',
+                key: 'hero',
                 items: {
                     title: 'Main Title',
                     subtitle: 'Subtitle',
@@ -343,6 +345,7 @@ class DashboardManager {
             },
             'About Section': {
                 icon: '👤',
+                key: 'about',
                 items: {
                     title: 'Section Title',
                     description: 'About Description',
@@ -354,6 +357,7 @@ class DashboardManager {
             },
             'Projects Section': {
                 icon: '🚀',
+                key: 'projects',
                 items: {
                     title: 'Section Title',
                     projectGrid: 'Project Grid',
@@ -362,6 +366,7 @@ class DashboardManager {
             },
             'Skills Section': {
                 icon: '💪',
+                key: 'skills',
                 items: {
                     title: 'Section Title',
                     categories: 'Skill Categories',
@@ -370,6 +375,7 @@ class DashboardManager {
             },
             'Contact Section': {
                 icon: '📞',
+                key: 'contact',
                 items: {
                     title: 'Section Title',
                     contactInfo: 'Contact Information',
@@ -382,6 +388,7 @@ class DashboardManager {
             },
             'Footer Section': {
                 icon: '🔻',
+                key: 'footer',
                 items: {
                     copyright: 'Copyright Text',
                     socialLinks: 'Social Links'
@@ -389,6 +396,7 @@ class DashboardManager {
             },
             'Visual Effects': {
                 icon: '✨',
+                key: 'effects',
                 items: {
                     particles: 'Particle Effects',
                     scrollAnimations: 'Scroll Animations',
@@ -404,7 +412,7 @@ class DashboardManager {
                 <p class="form-description">Control the visibility of individual elements across your portfolio. Toggle any item on or off to customize your layout.</p>
                 
                 ${Object.entries(sections).map(([sectionName, sectionData]) => {
-                    const sectionKey = sectionName.toLowerCase().replace(/\s+/g, '').replace('section', '');
+                    const sectionKey = sectionData.key;
                     const sectionVisibility = data[sectionKey] || {};
                     
                     return `
