@@ -12,15 +12,37 @@ class DashboardManager {
         this.renderCurrentFile();
     }
 
-    // Load data from localStorage or use defaults
+    // Load data from localStorage or use defaults with better validation
     loadDataFromStorage() {
         const savedData = localStorage.getItem('portfolioData');
 
         if (savedData) {
             try {
-                this.data = JSON.parse(savedData);
-                this.showStatus('Data loaded from local storage', 'success');
+                const parsed = JSON.parse(savedData);
+                
+                // Validate data structure
+                if (parsed && typeof parsed === 'object') {
+                    this.loadDefaultData();
+                    
+                    // Merge saved data with defaults to ensure all new fields exist
+                    if (parsed.colors) {
+                        this.data.colors = { ...this.data.colors, ...parsed.colors };
+                    }
+                    if (parsed.typography) {
+                        this.data.typography = { ...this.data.typography, ...parsed.typography };
+                    }
+                    if (parsed.personal) this.data.personal = parsed.personal;
+                    if (parsed.projects) this.data.projects = parsed.projects;
+                    if (parsed.skills) this.data.skills = parsed.skills;
+                    if (parsed.contact) this.data.contact = parsed.contact;
+                    if (parsed.social) this.data.social = parsed.social;
+                    
+                    this.showStatus('Data loaded successfully', 'success');
+                } else {
+                    throw new Error('Invalid data structure');
+                }
             } catch (error) {
+                console.error('Error loading data:', error);
                 this.loadDefaultData();
                 this.showStatus('Error loading saved data, using defaults', 'error');
             }
@@ -43,12 +65,51 @@ class DashboardManager {
     loadDefaultData() {
         this.data = {
             colors: {
+                // Primary colors
                 primary: "#64ffda",
+                primaryHover: "#52e7c7",
                 secondary: "#667eea",
+                secondaryHover: "#5568d3",
                 accent: "#ff6b6b",
+                accentHover: "#ff5252",
+                
+                // Background colors
                 background: "#0a0a0a",
-                surface: "#1a1a2e",
-                text: "#ffffff"
+                backgroundSecondary: "#1a1a2e",
+                surface: "#16213e",
+                surfaceHover: "#1f2a46",
+                
+                // Text colors
+                text: "#ffffff",
+                textSecondary: "#b8c5d6",
+                textMuted: "#8892a0",
+                
+                // UI Element colors
+                border: "#2c3e50",
+                borderLight: "#34495e",
+                link: "#64ffda",
+                linkHover: "#52e7c7",
+                
+                // Status colors
+                success: "#4caf50",
+                error: "#f44336",
+                warning: "#ff9800",
+                info: "#2196f3",
+                
+                // Gradient colors
+                gradientStart: "#667eea",
+                gradientEnd: "#764ba2",
+                
+                // Shadow colors
+                shadowColor: "rgba(0, 0, 0, 0.3)",
+                glowColor: "rgba(100, 255, 218, 0.2)"
+            },
+            typography: {
+                fontFamily: "'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                headingFont: "'Inter', sans-serif",
+                codeFont: "'Fira Code', 'Monaco', 'Consolas', monospace",
+                fontSize: "16px",
+                lineHeight: "1.6"
             },
             personal: {
                 name: "Alex Johnson",
@@ -98,7 +159,7 @@ class DashboardManager {
             contact: {
                 email: "alex@gamedev.com",
                 phone: "+1 (555) 123-4567",
-                whatsapp: "+15551234567", // WhatsApp number (international format)
+                whatsapp: "+15551234567",
                 location: "San Francisco, CA"
             },
             social: [
@@ -205,6 +266,7 @@ class DashboardManager {
     renderCurrentFile() {
         const titles = {
             colors: 'Colors Configuration',
+            typography: 'Typography Settings',
             personal: 'Personal Data',
             projects: 'Projects',
             skills: 'Skills & Technologies',
@@ -225,6 +287,9 @@ class DashboardManager {
         switch (this.currentFile) {
             case 'colors':
                 container.innerHTML = this.renderColorsForm(data);
+                break;
+            case 'typography':
+                container.innerHTML = this.renderTypographyForm(data);
                 break;
             case 'personal':
                 container.innerHTML = this.renderPersonalForm(data);
@@ -247,21 +312,96 @@ class DashboardManager {
     }
 
     renderColorsForm(data) {
+        const colorGroups = {
+            'Primary Colors': ['primary', 'primaryHover', 'secondary', 'secondaryHover', 'accent', 'accentHover'],
+            'Background Colors': ['background', 'backgroundSecondary', 'surface', 'surfaceHover'],
+            'Text Colors': ['text', 'textSecondary', 'textMuted'],
+            'UI Elements': ['border', 'borderLight', 'link', 'linkHover'],
+            'Status Colors': ['success', 'error', 'warning', 'info'],
+            'Gradients': ['gradientStart', 'gradientEnd'],
+            'Effects': ['shadowColor', 'glowColor']
+        };
+        
+        let html = '<div class="form-section">';
+        html += '<h3 class="form-section-title">🎨 Complete Color Palette</h3>';
+        
+        // Theme Presets
+        html += `
+            <div class="theme-presets" style="margin-bottom: 30px; padding: 20px; background: rgba(100, 255, 218, 0.1); border-radius: 10px;">
+                <h4 style="color: #64ffda; margin-bottom: 15px;">🌟 Quick Theme Presets</h4>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('cyberpunk')">Cyberpunk</button>
+                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('ocean')">Ocean Blue</button>
+                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('sunset')">Sunset</button>
+                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('forest')">Forest</button>
+                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('noir')">Dark Noir</button>
+                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('lavender')">Lavender Dream</button>
+                </div>
+            </div>
+        `;
+        
+        // Render color groups
+        for (const [groupName, fields] of Object.entries(colorGroups)) {
+            html += `<div class="color-group" style="margin-bottom: 25px; padding: 15px; background: rgba(10,10,10,0.3); border-radius: 8px;">`;
+            html += `<h4 style="color: #667eea; margin-bottom: 15px; font-size: 1.1rem;">${groupName}</h4>`;
+            
+            fields.forEach(key => {
+                if (data[key] !== undefined) {
+                    const label = key.replace(/([A-Z])/g, ' $1').trim();
+                    const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
+                    const colorValue = data[key].startsWith('#') ? data[key] : '#000000';
+                    html += `
+                        <div class="form-group">
+                            <label class="form-label">${capitalizedLabel}</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="color" class="color-input" value="${colorValue}" data-field="${key}">
+                                <input type="text" class="form-input" value="${data[key]}" data-field="${key}-text" data-color-field="${key}" style="flex: 1;" placeholder="#hex or rgba()">
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += '</div>';
+        }
+        
+        html += `
+            <div class="editor-actions">
+                <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                <button class="btn btn-secondary" onclick="dashboard.resetToDefaults()">🔄 Reset to Defaults</button>
+            </div>
+        </div>`;
+        
+        return html;
+    }
+
+    renderTypographyForm(data) {
         return `
             <div class="form-section">
-                <h3 class="form-section-title">🎨 Color Palette</h3>
-                ${Object.entries(data).map(([key, value]) => `
-                    <div class="form-group">
-                        <label class="form-label">${key.charAt(0).toUpperCase() + key.slice(1)}</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="color" class="color-input" value="${value}" data-field="${key}">
-                            <input type="text" class="form-input" value="${value}" data-field="${key}" style="flex: 1;">
-                        </div>
-                    </div>
-                `).join('')}
+                <h3 class="form-section-title">✍️ Typography Settings</h3>
+                <div class="form-group">
+                    <label class="form-label">Primary Font Family</label>
+                    <input type="text" class="form-input" value="${data.fontFamily}" data-field="fontFamily" placeholder="'Inter', sans-serif">
+                    <small style="color: #8892a0; margin-top: 5px; display: block;">Examples: 'Roboto', 'Open Sans', 'Poppins'</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Heading Font</label>
+                    <input type="text" class="form-input" value="${data.headingFont}" data-field="headingFont" placeholder="'Inter', sans-serif">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Code Font</label>
+                    <input type="text" class="form-input" value="${data.codeFont}" data-field="codeFont" placeholder="'Fira Code', monospace">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Base Font Size</label>
+                    <input type="text" class="form-input" value="${data.fontSize}" data-field="fontSize" placeholder="16px">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Line Height</label>
+                    <input type="text" class="form-input" value="${data.lineHeight}" data-field="lineHeight" placeholder="1.6">
+                </div>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -301,7 +441,6 @@ class DashboardManager {
                 </div>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -352,7 +491,6 @@ class DashboardManager {
                 <button class="add-btn" onclick="dashboard.addProject()">➕ Add New Project</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -384,7 +522,6 @@ class DashboardManager {
                 <button class="add-btn" onclick="dashboard.addSkillCategory()">➕ Add New Category</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -412,7 +549,6 @@ class DashboardManager {
                 </div>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -444,7 +580,6 @@ class DashboardManager {
                 <button class="add-btn" onclick="dashboard.addSocialLink()">➕ Add New Link</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -455,19 +590,23 @@ class DashboardManager {
         document.querySelectorAll('.color-input').forEach(input => {
             input.addEventListener('input', (e) => {
                 const textInput = e.target.parentNode.querySelector('input[type="text"]');
-                textInput.value = e.target.value;
+                if (textInput) {
+                    textInput.value = e.target.value;
+                }
             });
         });
 
-        document.querySelectorAll('input[type="text"][data-field]').forEach(input => {
-            if (input.parentNode.querySelector('.color-input')) {
-                input.addEventListener('input', (e) => {
-                    const colorInput = e.target.parentNode.querySelector('.color-input');
-                    if (colorInput) {
+        document.querySelectorAll('input[type="text"][data-color-field]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const colorInput = e.target.parentNode.querySelector('.color-input');
+                if (colorInput && e.target.value.startsWith('#')) {
+                    try {
                         colorInput.value = e.target.value;
+                    } catch (err) {
+                        // Invalid color format
                     }
-                });
-            }
+                }
+            });
         });
     }
 
@@ -524,6 +663,9 @@ class DashboardManager {
                 case 'colors':
                     this.saveColorsData();
                     break;
+                case 'typography':
+                    this.saveTypographyData();
+                    break;
                 case 'personal':
                     this.savePersonalData();
                     break;
@@ -545,7 +687,7 @@ class DashboardManager {
             const saved = this.saveDataToStorage();
 
             if (saved) {
-                this.showStatus(`${this.currentFile} data saved to local storage!`, 'success');
+                this.showStatus(`${this.currentFile} data saved successfully!`, 'success');
             } else {
                 this.showStatus('Error saving to local storage', 'error');
             }
@@ -559,16 +701,48 @@ class DashboardManager {
     }
 
     saveColorsData() {
+        const inputs = document.querySelectorAll('#formEditor input[data-color-field]');
+        
+        inputs.forEach(input => {
+            const field = input.dataset.colorField;
+            const value = input.value.trim();
+            
+            // Validate color format
+            if (value.startsWith('#') || value.startsWith('rgb') || value.startsWith('rgba')) {
+                this.data.colors[field] = value;
+            } else {
+                this.showStatus(`Invalid color format for ${field}. Use #hex or rgba() format.`, 'error');
+            }
+        });
+    }
+
+    saveTypographyData() {
         const inputs = document.querySelectorAll('#formEditor input[data-field]');
         inputs.forEach(input => {
-            this.data.colors[input.dataset.field] = input.value;
+            this.data.typography[input.dataset.field] = input.value.trim();
         });
     }
 
     savePersonalData() {
         const inputs = document.querySelectorAll('#formEditor input[data-field], #formEditor textarea[data-field]');
         inputs.forEach(input => {
-            const value = input.type === 'number' ? parseInt(input.value) : input.value;
+            let value = input.value;
+            
+            // Validate and parse number inputs
+            if (input.type === 'number') {
+                value = parseInt(value);
+                if (isNaN(value) || value < 0) {
+                    this.showStatus(`Invalid number for ${input.dataset.field}`, 'error');
+                    return;
+                }
+            }
+            
+            // Validate email
+            if (input.type === 'email' && value && !value.includes('@')) {
+                this.showStatus('Invalid email format', 'error');
+                return;
+            }
+            
             this.data.personal[input.dataset.field] = value;
         });
     }
@@ -627,7 +801,21 @@ class DashboardManager {
     saveContactData() {
         const inputs = document.querySelectorAll('#formEditor input[data-field]');
         inputs.forEach(input => {
-            this.data.contact[input.dataset.field] = input.value;
+            const value = input.value.trim();
+            
+            // Validate email format
+            if (input.dataset.field === 'email' && value && !value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                this.showStatus('Invalid email format', 'error');
+                return;
+            }
+            
+            // Validate WhatsApp format (should start with +)
+            if (input.dataset.field === 'whatsapp' && value && !value.startsWith('+')) {
+                this.showStatus('WhatsApp number should be in international format (e.g., +1234567890)', 'error');
+                return;
+            }
+            
+            this.data.contact[input.dataset.field] = value;
         });
     }
 
@@ -640,10 +828,18 @@ class DashboardManager {
             const inputs = item.querySelectorAll('input[data-field]');
 
             inputs.forEach(input => {
-                socialLink[input.dataset.field] = input.value;
+                socialLink[input.dataset.field] = input.value.trim();
             });
 
-            social.push(socialLink);
+            // Validate URL format
+            if (socialLink.url && !socialLink.url.match(/^https?:\/\/.+/)) {
+                this.showStatus('Invalid URL format. URLs should start with http:// or https://', 'error');
+                return;
+            }
+
+            if (socialLink.name) {
+                social.push(socialLink);
+            }
         });
 
         this.data.social = social;
@@ -750,6 +946,199 @@ class DashboardManager {
             this.renderCurrentFile();
         }
     }
+
+    // Theme preset system
+    applyThemePreset(theme) {
+        const presets = {
+            cyberpunk: {
+                primary: "#64ffda",
+                primaryHover: "#52e7c7",
+                secondary: "#667eea",
+                secondaryHover: "#5568d3",
+                accent: "#ff6b6b",
+                accentHover: "#ff5252",
+                background: "#0a0a0a",
+                backgroundSecondary: "#1a1a2e",
+                surface: "#16213e",
+                surfaceHover: "#1f2a46",
+                text: "#ffffff",
+                textSecondary: "#b8c5d6",
+                textMuted: "#8892a0",
+                border: "#2c3e50",
+                borderLight: "#34495e",
+                link: "#64ffda",
+                linkHover: "#52e7c7",
+                success: "#4caf50",
+                error: "#f44336",
+                warning: "#ff9800",
+                info: "#2196f3",
+                gradientStart: "#667eea",
+                gradientEnd: "#764ba2",
+                shadowColor: "rgba(0, 0, 0, 0.3)",
+                glowColor: "rgba(100, 255, 218, 0.2)"
+            },
+            ocean: {
+                primary: "#00b4d8",
+                primaryHover: "#0096c7",
+                secondary: "#4361ee",
+                secondaryHover: "#3a51d4",
+                accent: "#7209b7",
+                accentHover: "#560bad",
+                background: "#03045e",
+                backgroundSecondary: "#023e8a",
+                surface: "#0077b6",
+                surfaceHover: "#0096c7",
+                text: "#caf0f8",
+                textSecondary: "#90e0ef",
+                textMuted: "#48cae4",
+                border: "#0096c7",
+                borderLight: "#00b4d8",
+                link: "#00d4ff",
+                linkHover: "#00b8e6",
+                success: "#06ffa5",
+                error: "#ff006e",
+                warning: "#ffb703",
+                info: "#0096c7",
+                gradientStart: "#4361ee",
+                gradientEnd: "#7209b7",
+                shadowColor: "rgba(3, 4, 94, 0.5)",
+                glowColor: "rgba(0, 180, 216, 0.3)"
+            },
+            sunset: {
+                primary: "#ff6b35",
+                primaryHover: "#ff5722",
+                secondary: "#f7931e",
+                secondaryHover: "#e67e00",
+                accent: "#fbb040",
+                accentHover: "#f9a825",
+                background: "#1a0b2e",
+                backgroundSecondary: "#2e1a47",
+                surface: "#432874",
+                surfaceHover: "#52368c",
+                text: "#fff5e4",
+                textSecondary: "#ffe4c0",
+                textMuted: "#ffc98b",
+                border: "#5b3a70",
+                borderLight: "#734a94",
+                link: "#ff6b35",
+                linkHover: "#ff5722",
+                success: "#4caf50",
+                error: "#e53935",
+                warning: "#fbb040",
+                info: "#29b6f6",
+                gradientStart: "#ff6b35",
+                gradientEnd: "#f7931e",
+                shadowColor: "rgba(26, 11, 46, 0.4)",
+                glowColor: "rgba(255, 107, 53, 0.3)"
+            },
+            forest: {
+                primary: "#52b788",
+                primaryHover: "#40916c",
+                secondary: "#2d6a4f",
+                secondaryHover: "#1b4332",
+                accent: "#95d5b2",
+                accentHover: "#74c69d",
+                background: "#081c15",
+                backgroundSecondary: "#1b4332",
+                surface: "#2d6a4f",
+                surfaceHover: "#40916c",
+                text: "#d8f3dc",
+                textSecondary: "#b7e4c7",
+                textMuted: "#95d5b2",
+                border: "#40916c",
+                borderLight: "#52b788",
+                link: "#95d5b2",
+                linkHover: "#74c69d",
+                success: "#52b788",
+                error: "#e63946",
+                warning: "#f4a261",
+                info: "#2a9d8f",
+                gradientStart: "#52b788",
+                gradientEnd: "#2d6a4f",
+                shadowColor: "rgba(8, 28, 21, 0.5)",
+                glowColor: "rgba(82, 183, 136, 0.2)"
+            },
+            noir: {
+                primary: "#e0e0e0",
+                primaryHover: "#f5f5f5",
+                secondary: "#9e9e9e",
+                secondaryHover: "#bdbdbd",
+                accent: "#616161",
+                accentHover: "#757575",
+                background: "#000000",
+                backgroundSecondary: "#121212",
+                surface: "#1e1e1e",
+                surfaceHover: "#2a2a2a",
+                text: "#ffffff",
+                textSecondary: "#e0e0e0",
+                textMuted: "#9e9e9e",
+                border: "#424242",
+                borderLight: "#616161",
+                link: "#e0e0e0",
+                linkHover: "#f5f5f5",
+                success: "#66bb6a",
+                error: "#ef5350",
+                warning: "#ffa726",
+                info: "#42a5f5",
+                gradientStart: "#424242",
+                gradientEnd: "#212121",
+                shadowColor: "rgba(0, 0, 0, 0.6)",
+                glowColor: "rgba(255, 255, 255, 0.1)"
+            },
+            lavender: {
+                primary: "#c77dff",
+                primaryHover: "#b565f2",
+                secondary: "#9d4edd",
+                secondaryHover: "#8b3fd9",
+                accent: "#e0aaff",
+                accentHover: "#d49aed",
+                background: "#10002b",
+                backgroundSecondary: "#240046",
+                surface: "#3c096c",
+                surfaceHover: "#5a189a",
+                text: "#f0e6ff",
+                textSecondary: "#e0d1ff",
+                textMuted: "#c9b3f5",
+                border: "#5a189a",
+                borderLight: "#7209b7",
+                link: "#c77dff",
+                linkHover: "#b565f2",
+                success: "#4caf50",
+                error: "#ff006e",
+                warning: "#ffb703",
+                info: "#4cc9f0",
+                gradientStart: "#c77dff",
+                gradientEnd: "#7209b7",
+                shadowColor: "rgba(16, 0, 43, 0.5)",
+                glowColor: "rgba(199, 125, 255, 0.3)"
+            }
+        };
+
+        if (presets[theme]) {
+            this.data.colors = { ...this.data.colors, ...presets[theme] };
+            this.renderCurrentFile();
+            this.showStatus(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme applied!`, 'success');
+        }
+    }
+
+    // Reset colors to default
+    resetToDefaults() {
+        if (confirm('Reset all colors to default values?')) {
+            const tempData = { ...this.data };
+            this.loadDefaultData();
+            
+            // Preserve non-color data
+            this.data.personal = tempData.personal;
+            this.data.projects = tempData.projects;
+            this.data.skills = tempData.skills;
+            this.data.contact = tempData.contact;
+            this.data.social = tempData.social;
+            
+            this.saveDataToStorage();
+            this.renderCurrentFile();
+            this.showStatus('Colors reset to defaults', 'success');
+        }
+    }
 }
 
 // Global functions
@@ -784,7 +1173,7 @@ function saveJSON() {
         const saved = dashboard.saveDataToStorage();
 
         if (saved) {
-            dashboard.showStatus(`${dashboard.currentFile} data saved to local storage!`, 'success');
+            dashboard.showStatus(`${dashboard.currentFile} data saved successfully!`, 'success');
         } else {
             dashboard.showStatus('Error saving to local storage', 'error');
         }
