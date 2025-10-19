@@ -87,14 +87,16 @@ class PortfolioManager {
             // Load from JSON file
             const response = await fetch('portfolio-complete.json');
 
-            console.log(' '+response.json().colors[0]);
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
+            console.log('1');
             
             const data = await response.json();
 
+            console.log('2');
+            console.log(data.about);
 
 
             // Map JSON data to config
