@@ -7,7 +7,11 @@ class PortfolioManager {
             projects: [],
             skills: {},
             contact: {},
-            social: []
+            social: [],
+            timeline: [],
+            stats: [],
+            blogs: [],
+            sectionVisibility: {}
         };
         this.isLoading = true;
         this.init();
@@ -35,11 +39,38 @@ class PortfolioManager {
                 this.config.skills = portfolioData.skills || this.getDefaultSkills();
                 this.config.contact = portfolioData.contact || this.getDefaultContact();
                 this.config.social = portfolioData.social || this.getDefaultSocial();
+                this.config.timeline = portfolioData.timeline || this.getDefaultTimeline();
+                this.config.stats = portfolioData.stats || this.getDefaultStats();
+                this.config.blogs = portfolioData.blogs || this.getDefaultBlogs();
+                this.config.sectionVisibility = portfolioData.sectionVisibility || this.getDefaultSectionVisibility();
 
                 console.log('Portfolio data loaded successfully from dashboard');
             } else {
-                console.log('No dashboard data found, using defaults');
-                this.loadDefaults();
+                // Try to fetch from local JSON as fallback
+                try {
+                    console.log('No dashboard data found, attempting to load portfolio-complete.json...');
+                    const response = await fetch('portfolio-complete.json');
+                    if (response.ok) {
+                        const jsonData = await response.json();
+                        this.config.colors = jsonData.colors || this.getDefaultColors();
+                        this.config.personal = jsonData.personal || this.getDefaultPersonalData();
+                        this.config.projects = jsonData.projects || this.getDefaultProjects();
+                        this.config.skills = jsonData.skills || this.getDefaultSkills();
+                        this.config.contact = jsonData.contact || this.getDefaultContact();
+                        this.config.social = jsonData.social || this.getDefaultSocial();
+                        this.config.timeline = jsonData.timeline || this.getDefaultTimeline();
+                        this.config.stats = jsonData.stats || this.getDefaultStats();
+                        this.config.blogs = jsonData.blogs || this.getDefaultBlogs();
+                        this.config.sectionVisibility = jsonData.sectionVisibility || this.getDefaultSectionVisibility();
+                        console.log('Loaded configuration from portfolio-complete.json');
+                    } else {
+                        console.log('portfolio-complete.json not found or failed, using defaults');
+                        this.loadDefaults();
+                    }
+                } catch (fetchError) {
+                    console.log('Failed to load portfolio-complete.json, using defaults');
+                    this.loadDefaults();
+                }
             }
 
         } catch (error) {
@@ -148,6 +179,42 @@ class PortfolioManager {
         ];
     }
 
+    getDefaultTimeline() {
+        return [
+            { year: '2020', title: 'Joined Game Studio', description: 'Started as a junior game developer.' },
+            { year: '2022', title: 'Lead Developer', description: 'Led a team to ship a cross-platform title.' }
+        ];
+    }
+
+    getDefaultStats() {
+        return [
+            { label: 'Unity', percent: 85 },
+            { label: 'Unreal Engine', percent: 70 },
+            { label: 'C#', percent: 90 },
+            { label: 'C++', percent: 65 }
+        ];
+    }
+
+    getDefaultBlogs() {
+        return [
+            { id: 1, title: 'Building a Shader Graph Effect', date: '2024-08-15', summary: 'A walkthrough on creating a glow effect in Unity Shader Graph.', content: 'Full content of the blog post goes here...' },
+            { id: 2, title: 'Optimizing Draw Calls', date: '2024-10-01', summary: 'Tips to reduce draw calls and improve frame rate.', content: 'Detailed techniques and examples...' }
+        ];
+    }
+
+    getDefaultSectionVisibility() {
+        return {
+            home: true,
+            about: true,
+            projects: true,
+            skills: true,
+            contact: true,
+            timeline: true,
+            stats: true,
+            blog: true
+        };
+    }
+
     loadDefaults() {
         this.config.colors = this.getDefaultColors();
         this.config.personal = this.getDefaultPersonalData();
@@ -155,6 +222,10 @@ class PortfolioManager {
         this.config.skills = this.getDefaultSkills();
         this.config.contact = this.getDefaultContact();
         this.config.social = this.getDefaultSocial();
+        this.config.timeline = this.getDefaultTimeline();
+        this.config.stats = this.getDefaultStats();
+        this.config.blogs = this.getDefaultBlogs();
+        this.config.sectionVisibility = this.getDefaultSectionVisibility();
     }
 
     initializeComponents() {
@@ -169,6 +240,7 @@ class PortfolioManager {
         this.initializeCanvasBackground();
         this.initializeScrollAnimations();
         this.setupDataRefreshListener();
+        this.applySectionVisibility();
     }
 
     // Add listener for localStorage changes (when dashboard updates data)
@@ -182,11 +254,6 @@ class PortfolioManager {
                 });
             }
         });
-
-        // Also check periodically for updates (in case same-tab updates)
-        setInterval(() => {
-            this.checkForUpdates();
-        }, 2000);
     }
 
     checkForUpdates() {
@@ -224,9 +291,12 @@ class PortfolioManager {
         this.renderSkills();
         this.populateContact();
         this.renderSocialLinks();
+        this.renderTimeline();
+        this.renderStats();
+        this.renderBlogs();
+        this.applySectionVisibility();
 
-        // Show a subtle notification that content was updated
-        this.showUpdateNotification();
+        // Update notification removed as per new requirements
     }
 
     showUpdateNotification() {
@@ -405,6 +475,100 @@ class PortfolioManager {
                 </div>
             </div>
         `).join('');
+    }
+
+    renderTimeline() {
+        const container = document.getElementById('timelineContainer');
+        if (!container) return;
+        const items = this.config.timeline || [];
+        container.innerHTML = items.map(item => `
+            <div class="timeline-item fade-in">
+                <div class="timeline-year">${item.year}</div>
+                <div class="timeline-content">
+                    <h3 class="timeline-title">${item.title}</h3>
+                    <p class="timeline-description">${item.description}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    renderStats() {
+        const container = document.getElementById('statsContainer');
+        if (!container) return;
+        const stats = this.config.stats || [];
+        container.innerHTML = stats.map(stat => `
+            <div class="stat-bar">
+                <div class="stat-label">${stat.label}</div>
+                <div class="stat-track"><div class="stat-fill" data-target="${stat.percent}"></div></div>
+            </div>
+        `).join('');
+
+        // Animate fills
+        const fills = container.querySelectorAll('.stat-fill');
+        requestAnimationFrame(() => {
+            fills.forEach(fill => {
+                const target = Number(fill.getAttribute('data-target')) || 0;
+                fill.style.transition = 'width 1.2s ease';
+                fill.style.width = target + '%';
+            });
+        });
+    }
+
+    renderBlogs() {
+        const container = document.getElementById('blogsList');
+        if (!container) return;
+        const blogs = this.config.blogs || [];
+        container.innerHTML = blogs.map(post => `
+            <article class="blog-card">
+                <h3 class="blog-title"><a href="#" class="blog-link" data-id="${post.id}">${post.title}</a></h3>
+                <div class="blog-meta">${post.date}</div>
+                <p class="blog-summary">${post.summary}</p>
+            </article>
+        `).join('');
+
+        container.querySelectorAll('.blog-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const id = Number(link.getAttribute('data-id'));
+                const post = blogs.find(b => b.id === id);
+                if (post) this.openBlogModal(post);
+            });
+        });
+    }
+
+    openBlogModal(post) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10001;display:flex;align-items:center;justify-content:center;padding:20px;';
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background:var(--color-surface);color:var(--color-text);max-width:800px;width:100%;padding:24px;border-radius:12px;border:1px solid var(--color-primary);overflow:auto;max-height:90vh;';
+        modal.innerHTML = `
+            <h2 style="margin-top:0;color:var(--color-primary)">${post.title}</h2>
+            <div style="opacity:0.8;margin-bottom:12px">${post.date}</div>
+            <div style="white-space:pre-wrap;line-height:1.6">${post.content}</div>
+            <div style="text-align:right;margin-top:16px"><button id="closeBlogModal" style="background:transparent;color:#ff6b6b;border:2px solid #ff6b6b;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600">Close</button></div>
+        `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) document.body.removeChild(overlay); });
+        modal.querySelector('#closeBlogModal').addEventListener('click', () => document.body.removeChild(overlay));
+    }
+
+    applySectionVisibility() {
+        const visibility = this.config.sectionVisibility || this.getDefaultSectionVisibility();
+        const sectionIds = ['home','about','projects','skills','contact','timeline','stats'];
+        sectionIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.display = visibility[id] === false ? 'none' : '';
+        });
+
+        // Hide blog nav link if configured
+        const blogNav = document.getElementById('navBlog') || document.querySelector('a[href="blog.html"]');
+        if (blogNav) {
+            const hide = visibility.blog === false;
+            if (blogNav.closest('li')) blogNav.closest('li').style.display = hide ? 'none' : '';
+            else blogNav.style.display = hide ? 'none' : '';
+        }
     }
 
     populateContact() {
@@ -616,557 +780,6 @@ function scrollToSection(sectionId) {
         section.scrollIntoView({ behavior: 'smooth' });
     }
 }
-
-// Contact Form Handling - Multiple Working Options
-class ContactFormManager {
-    constructor() {
-        this.form = null;
-        this.init();
-    }
-
-    init() {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.form = document.querySelector('.contact-form');
-            if (this.form) {
-                this.setupEventListeners();
-            }
-        });
-    }
-
-    setupEventListeners() {
-        // Email submission
-        this.form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.sendViaEmail();
-        });
-
-        // WhatsApp
-        const whatsappBtn = document.getElementById('whatsappBtn');
-        if (whatsappBtn) {
-            whatsappBtn.addEventListener('click', () => {
-                this.sendViaWhatsApp();
-            });
-        }
-
-        // Copy to clipboard
-        const copyBtn = document.getElementById('copyMessageBtn');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                this.copyToClipboard();
-            });
-        }
-
-        // Download message
-        const downloadBtn = document.getElementById('downloadMessageBtn');
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', () => {
-                this.downloadMessage();
-            });
-        }
-    }
-
-    getFormData() {
-        const formData = new FormData(this.form);
-        return {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            subject: formData.get('subject'),
-            message: formData.get('message')
-        };
-    }
-
-    validateForm() {
-        const data = this.getFormData();
-        if (!data.name || !data.email || !data.subject || !data.message) {
-            this.showNotification('Please fill in all fields', 'error');
-            return false;
-        }
-        
-        // Basic email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-            this.showNotification('Please enter a valid email address', 'error');
-            return false;
-        }
-        
-        return true;
-    }
-
-    sendViaEmail() {
-        if (!this.validateForm()) return;
-
-        const data = this.getFormData();
-        const portfolioEmail = this.getPortfolioEmail();
-
-        // Try multiple methods for better compatibility
-        this.tryEmailMethods(data, portfolioEmail);
-    }
-
-    tryEmailMethods(data, portfolioEmail) {
-        const methods = [
-            () => this.sendViaMailtoWithWindow(data, portfolioEmail),
-            () => this.sendViaMailtoWithLocation(data, portfolioEmail),
-            () => this.sendViaMailtoSimple(data, portfolioEmail),
-            () => this.showEmailInstructions(data, portfolioEmail)
-        ];
-
-        let currentMethod = 0;
-
-        const tryNext = () => {
-            if (currentMethod < methods.length) {
-                try {
-                    const result = methods[currentMethod]();
-                    if (result !== false) {
-                        this.showNotification('Opening your email client...', 'success');
-                        this.resetForm(2000);
-                        return;
-                    }
-                } catch (error) {
-                    console.warn(`Email method ${currentMethod + 1} failed:`, error);
-                }
-                currentMethod++;
-                setTimeout(tryNext, 100);
-            } else {
-                this.showNotification('Unable to open email client. Message copied to clipboard instead.', 'error');
-                this.copyToClipboard();
-            }
-        };
-
-        tryNext();
-    }
-
-    sendViaMailtoWithWindow(data, portfolioEmail) {
-        const subject = encodeURIComponent(data.subject);
-        const body = this.createEmailBody(data);
-        
-        // Check if body is too long (mailto has limitations)
-        if (body.length > 1800) {
-            return false; // Try next method
-        }
-
-        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}&body=${encodeURIComponent(body)}`;
-        
-        // Try opening in new window first
-        const emailWindow = window.open(mailtoLink, '_self');
-        
-        // Check if window opened successfully
-        setTimeout(() => {
-            if (emailWindow && !emailWindow.closed) {
-                return true;
-            }
-        }, 100);
-        
-        return true;
-    }
-
-    sendViaMailtoWithLocation(data, portfolioEmail) {
-        const subject = encodeURIComponent(data.subject);
-        const shortBody = `From: ${data.name} (${data.email})\n\n${data.message}`;
-        
-        if (shortBody.length > 1500) {
-            return false; // Try next method
-        }
-
-        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}&body=${encodeURIComponent(shortBody)}`;
-        
-        try {
-            window.location.href = mailtoLink;
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    sendViaMailtoSimple(data, portfolioEmail) {
-        // Very simple mailto with just email and subject
-        const subject = encodeURIComponent(`Contact from ${data.name}: ${data.subject}`);
-        const mailtoLink = `mailto:${portfolioEmail}?subject=${subject}`;
-        
-        try {
-            // Create a hidden link and click it
-            const link = document.createElement('a');
-            link.href = mailtoLink;
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Show instructions for user to copy message
-            setTimeout(() => {
-                this.showEmailInstructions(data, portfolioEmail);
-            }, 500);
-            
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    showEmailInstructions(data, portfolioEmail) {
-        // Create a modal with email instructions
-        const modal = this.createEmailModal(data, portfolioEmail);
-        document.body.appendChild(modal);
-        return true;
-    }
-
-    createEmailBody(data) {
-        return `Hi!
-
-My name is ${data.name} and I'd like to get in touch.
-
-Subject: ${data.subject}
-
-Message:
-${data.message}
-
-Contact Information:
-- Name: ${data.name}
-- Email: ${data.email}
-- Date: ${new Date().toLocaleString()}
-
-Best regards,
-${data.name}
-
----
-Sent from Portfolio Contact Form`;
-    }
-
-    createEmailModal(data, portfolioEmail) {
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10001;
-            backdrop-filter: blur(5px);
-        `;
-
-        const modalContent = document.createElement('div');
-        modalContent.style.cssText = `
-            background: linear-gradient(135deg, var(--color-surface), var(--color-background));
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 2px solid var(--color-primary);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        `;
-
-        const emailBody = this.createEmailBody(data);
-
-        modalContent.innerHTML = `
-            <h3 style="color: var(--color-primary); margin-bottom: 20px; text-align: center;">
-                📧 Email Instructions
-            </h3>
-            <p style="color: var(--color-text); margin-bottom: 15px; line-height: 1.6;">
-                Your email client should open automatically. If it doesn't, please:
-            </p>
-            <ol style="color: var(--color-text); margin-bottom: 20px; line-height: 1.6;">
-                <li>Send an email to: <strong style="color: var(--color-primary)">${portfolioEmail}</strong></li>
-                <li>Use this subject: <strong style="color: var(--color-primary)">${data.subject}</strong></li>
-                <li>Copy the message below:</li>
-            </ol>
-            
-            <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <pre style="color: var(--color-text); font-size: 14px; line-height: 1.4; white-space: pre-wrap; margin: 0;">${emailBody}</pre>
-            </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button id="copyEmailText" style="
-                    flex: 1;
-                    background: var(--color-primary);
-                    color: var(--color-background);
-                    border: none;
-                    padding: 10px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">📋 Copy Message</button>
-                <button id="openEmail" style="
-                    flex: 1;
-                    background: transparent;
-                    color: var(--color-primary);
-                    border: 2px solid var(--color-primary);
-                    padding: 10px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">📧 Try Email Again</button>
-                <button id="closeModal" style="
-                    background: transparent;
-                    color: #ff6b6b;
-                    border: 2px solid #ff6b6b;
-                    padding: 10px 15px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">✕</button>
-            </div>
-        `;
-
-        modal.appendChild(modalContent);
-
-        // Add event listeners
-        modalContent.querySelector('#copyEmailText').addEventListener('click', async () => {
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(emailBody);
-                } else {
-                    this.fallbackCopyToClipboard(emailBody);
-                }
-                this.showNotification('Message copied to clipboard!', 'success');
-            } catch (error) {
-                this.showNotification('Failed to copy message', 'error');
-            }
-        });
-
-        modalContent.querySelector('#openEmail').addEventListener('click', () => {
-            const simpleMailto = `mailto:${portfolioEmail}?subject=${encodeURIComponent(data.subject)}`;
-            window.location.href = simpleMailto;
-        });
-
-        modalContent.querySelector('#closeModal').addEventListener('click', () => {
-            document.body.removeChild(modal);
-            this.resetForm();
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                document.body.removeChild(modal);
-                this.resetForm();
-            }
-        });
-
-        return modal;
-    }
-
-    sendViaWhatsApp() {
-        if (!this.validateForm()) return;
-
-        const data = this.getFormData();
-        const message = `Hi! I'm ${data.name} and I'd like to get in touch.
-
-*Subject:* ${data.subject}
-
-*Message:*
-${data.message}
-
-*Contact Info:*
-📧 ${data.email}
-📅 ${new Date().toLocaleString()}
-
-Best regards,
-${data.name}`;
-
-        // Get phone number from contact data or use default
-        const phoneNumber = this.getPortfolioPhone();
-        
-        try {
-            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappURL, '_blank');
-            
-            this.showNotification('Opening WhatsApp...', 'success');
-            this.resetForm(2000);
-        } catch (error) {
-            this.showNotification('Failed to open WhatsApp. Message copied to clipboard instead.', 'error');
-            this.copyToClipboard();
-        }
-    }
-
-    getPortfolioPhone() {
-        // Try to get WhatsApp number from contact configuration first
-        if (this.portfolio && this.portfolio.config && this.portfolio.config.contact && this.portfolio.config.contact.whatsapp) {
-            return this.portfolio.config.contact.whatsapp.replace(/[^\d+]/g, '');
-        }
-        
-        // Try to get phone from contact configuration
-        const contactPhone = document.getElementById('contactPhone');
-        if (contactPhone && contactPhone.textContent !== 'Loading...') {
-            // Remove all non-numeric characters except +
-            return contactPhone.textContent.replace(/[^\d+]/g, '');
-        }
-        
-        // Try localStorage data
-        try {
-            const savedData = localStorage.getItem('portfolioData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                if (data.contact && data.contact.whatsapp) {
-                    return data.contact.whatsapp.replace(/[^\d+]/g, '');
-                }
-                if (data.contact && data.contact.phone) {
-                    return data.contact.phone.replace(/[^\d+]/g, '');
-                }
-            }
-        } catch (error) {
-            console.warn('Error getting phone from localStorage:', error);
-        }
-        
-        // Fallback - you can customize this
-        return '1234567890'; // Replace with actual phone number
-    }
-
-    async copyToClipboard() {
-        if (!this.validateForm()) return;
-
-        const data = this.getFormData();
-        const messageText = this.formatMessage(data);
-
-        try {
-            if (navigator.clipboard && window.isSecureContext) {
-                await navigator.clipboard.writeText(messageText);
-            } else {
-                // Fallback for older browsers
-                this.fallbackCopyToClipboard(messageText);
-            }
-            
-            this.showNotification('Message copied to clipboard!', 'success');
-            this.resetForm(2000);
-        } catch (error) {
-            this.showNotification('Failed to copy message. Please try again.', 'error');
-        }
-    }
-
-    fallbackCopyToClipboard(text) {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        
-        try {
-            document.execCommand('copy');
-            textArea.remove();
-        } catch (error) {
-            textArea.remove();
-            throw error;
-        }
-    }
-
-    downloadMessage() {
-        if (!this.validateForm()) return;
-
-        const data = this.getFormData();
-        const messageText = this.formatMessage(data);
-        
-        const blob = new Blob([messageText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `message-from-${data.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        this.showNotification('Message downloaded successfully!', 'success');
-        this.resetForm(2000);
-    }
-
-    formatMessage(data) {
-        const timestamp = new Date().toLocaleString();
-        return `Contact Message
-=================
-
-From: ${data.name}
-Email: ${data.email}
-Subject: ${data.subject}
-Date: ${timestamp}
-
-Message:
---------
-${data.message}
-
----
-Generated from Portfolio Contact Form`;
-    }
-
-    getPortfolioEmail() {
-        // Try to get email from contact configuration
-        const contactEmail = document.getElementById('contactEmail');
-        if (contactEmail && contactEmail.textContent !== 'Loading...') {
-            return contactEmail.textContent;
-        }
-        
-        // Fallback to a default
-        return 'contact@example.com';
-    }
-
-    showNotification(message, type) {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `contact-notification contact-notification-${type}`;
-        notification.textContent = message;
-        
-        // Style the notification
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: #fff;
-            font-weight: 600;
-            z-index: 10000;
-            max-width: 300px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            animation: slideInNotification 0.3s ease;
-            background: ${type === 'success' ? 'linear-gradient(45deg, #4caf50, #45a049)' : 'linear-gradient(45deg, #f44336, #d32f2f)'};
-        `;
-
-        // Add animation keyframes if not already added
-        if (!document.querySelector('#notificationStyles')) {
-            const style = document.createElement('style');
-            style.id = 'notificationStyles';
-            style.textContent = `
-                @keyframes slideInNotification {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOutNotification {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        document.body.appendChild(notification);
-
-        // Remove notification after 4 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideOutNotification 0.3s ease forwards';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 4000);
-    }
-
-    resetForm(delay = 0) {
-        setTimeout(() => {
-            if (this.form) {
-                this.form.reset();
-            }
-        }, delay);
-    }
-}
-
-// Initialize the contact form manager
-const contactFormManager = new ContactFormManager();
 
 // Initialize the portfolio manager
 const portfolio = new PortfolioManager();

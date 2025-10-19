@@ -34,7 +34,10 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#skills">Skills</a></li>
+                <li><a href="#timeline">Timeline</a></li>
+                <li><a href="#stats">Stats</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="blog.html" id="navBlog">Blog</a></li>
                 <li><a href="dashboard.html" class="dashboard-link">Dashboard</a></li>
             </ul>
             <div class="hamburger">
@@ -129,6 +132,28 @@
         </div>
     </section>
 
+    <!-- Timeline Section -->
+    <section id="timeline" class="timeline">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Career Timeline</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div id="timelineContainer" class="timeline-container"></div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Skill Proficiency</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div id="statsContainer" class="stats-container"></div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
@@ -160,35 +185,7 @@
                         </div>
                     </div>
                 </div>
-                <form class="contact-form" id="contactForm">
-                    <div class="form-group">
-                        <input type="text" name="name" placeholder="Your Name" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" name="email" placeholder="Your Email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" name="subject" placeholder="Subject" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">📧 Send via Email</button>
-                        <button type="button" class="btn btn-secondary" id="whatsappBtn">💬 Send via WhatsApp</button>
-                        <button type="button" class="btn btn-secondary" id="copyMessageBtn">📋 Copy Message</button>
-                        <button type="button" class="btn btn-secondary" id="downloadMessageBtn">💾 Download Message</button>
-                    </div>
-                    <div class="contact-methods">
-                        <p class="contact-note">Choose your preferred method to send your message:</p>
-                        <ul class="method-list">
-                            <li><strong>Send via Email:</strong> Opens your default email client</li>
-                            <li><strong>Send via WhatsApp:</strong> Opens WhatsApp with pre-filled message</li>
-                            <li><strong>Copy Message:</strong> Copies formatted message to clipboard</li>
-                            <li><strong>Download:</strong> Downloads message as text file</li>
-                        </ul>
-                    </div>
-                </form>
+                <!-- Contact form removed; static contact details only -->
             </div>
         </div>
     </section>
