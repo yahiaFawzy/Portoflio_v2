@@ -12,37 +12,15 @@ class DashboardManager {
         this.renderCurrentFile();
     }
 
-    // Load data from localStorage or use defaults with better validation
+    // Load data from localStorage or use defaults
     loadDataFromStorage() {
         const savedData = localStorage.getItem('portfolioData');
 
         if (savedData) {
             try {
-                const parsed = JSON.parse(savedData);
-                
-                // Validate data structure
-                if (parsed && typeof parsed === 'object') {
-                    this.loadDefaultData();
-                    
-                    // Merge saved data with defaults to ensure all new fields exist
-                    if (parsed.colors) {
-                        this.data.colors = { ...this.data.colors, ...parsed.colors };
-                    }
-                    if (parsed.typography) {
-                        this.data.typography = { ...this.data.typography, ...parsed.typography };
-                    }
-                    if (parsed.personal) this.data.personal = parsed.personal;
-                    if (parsed.projects) this.data.projects = parsed.projects;
-                    if (parsed.skills) this.data.skills = parsed.skills;
-                    if (parsed.contact) this.data.contact = parsed.contact;
-                    if (parsed.social) this.data.social = parsed.social;
-                    
-                    this.showStatus('Data loaded successfully', 'success');
-                } else {
-                    throw new Error('Invalid data structure');
-                }
+                this.data = JSON.parse(savedData);
+                this.showStatus('Data loaded from local storage', 'success');
             } catch (error) {
-                console.error('Error loading data:', error);
                 this.loadDefaultData();
                 this.showStatus('Error loading saved data, using defaults', 'error');
             }
@@ -65,51 +43,78 @@ class DashboardManager {
     loadDefaultData() {
         this.data = {
             colors: {
-                // Primary colors
                 primary: "#64ffda",
-                primaryHover: "#52e7c7",
                 secondary: "#667eea",
-                secondaryHover: "#5568d3",
                 accent: "#ff6b6b",
-                accentHover: "#ff5252",
-                
-                // Background colors
                 background: "#0a0a0a",
-                backgroundSecondary: "#1a1a2e",
-                surface: "#16213e",
-                surfaceHover: "#1f2a46",
-                
-                // Text colors
+                surface: "#1a1a2e",
                 text: "#ffffff",
-                textSecondary: "#b8c5d6",
-                textMuted: "#8892a0",
-                
-                // UI Element colors
-                border: "#2c3e50",
-                borderLight: "#34495e",
-                link: "#64ffda",
-                linkHover: "#52e7c7",
-                
-                // Status colors
                 success: "#4caf50",
-                error: "#f44336",
                 warning: "#ff9800",
+                error: "#f44336",
                 info: "#2196f3",
-                
-                // Gradient colors
+                muted: "#6c757d",
+                light: "#f8f9fa",
+                dark: "#343a40",
                 gradientStart: "#667eea",
                 gradientEnd: "#764ba2",
-                
-                // Shadow colors
-                shadowColor: "rgba(0, 0, 0, 0.3)",
-                glowColor: "rgba(100, 255, 218, 0.2)"
+                border: "rgba(100, 255, 218, 0.2)",
+                shadow: "rgba(0, 0, 0, 0.3)",
+                primaryHover: "#4fd3b8",
+                secondaryHover: "#5a6fd8",
+                accentHover: "#ff5252"
             },
-            typography: {
-                fontFamily: "'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                headingFont: "'Inter', sans-serif",
-                codeFont: "'Fira Code', 'Monaco', 'Consolas', monospace",
-                fontSize: "16px",
-                lineHeight: "1.6"
+            visibility: {
+                header: {
+                    logo: true,
+                    navigation: true,
+                    dashboardLink: true,
+                    mobileMenu: true
+                },
+                hero: {
+                    title: true,
+                    subtitle: true,
+                    buttons: true,
+                    scrollIndicator: true,
+                    backgroundCanvas: true
+                },
+                about: {
+                    title: true,
+                    description: true,
+                    profileImage: true,
+                    experienceYears: true,
+                    projectsCompleted: true,
+                    awards: true
+                },
+                projects: {
+                    title: true,
+                    projectGrid: true,
+                    featuredOnly: true
+                },
+                skills: {
+                    title: true,
+                    categories: true,
+                    icons: true
+                },
+                contact: {
+                    title: true,
+                    contactInfo: true,
+                    email: true,
+                    phone: true,
+                    location: true,
+                    contactForm: true,
+                    socialLinks: true
+                },
+                footer: {
+                    copyright: true,
+                    socialLinks: true
+                },
+                effects: {
+                    particles: true,
+                    scrollAnimations: true,
+                    loadingScreen: true,
+                    glitchEffect: true
+                }
             },
             personal: {
                 name: "Alex Johnson",
@@ -165,7 +170,69 @@ class DashboardManager {
             social: [
                 { name: "GitHub", url: "https://github.com", icon: "🔗" },
                 { name: "LinkedIn", url: "https://linkedin.com", icon: "💼" },
-                { name: "Twitter", url: "https://twitter.com", icon: "🐦" }
+                { name: "Twitter", url: "https://twitter.com", icon: "🦅" }
+            ],
+            timeline: [
+                {
+                    id: "timeline-1",
+                    year: "2024",
+                    title: "Senior Game Developer",
+                    description: "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics.",
+                    visible: true
+                },
+                {
+                    id: "timeline-2",
+                    year: "2022",
+                    title: "Game Developer",
+                    description: "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics.",
+                    visible: true
+                },
+                {
+                    id: "timeline-3",
+                    year: "2020",
+                    title: "Junior Developer",
+                    description: "Started career in game development, working on mobile games and learning industry best practices.",
+                    visible: true
+                },
+                {
+                    id: "timeline-4",
+                    year: "2019",
+                    title: "Computer Science Graduate",
+                    description: "Graduated with honors, specializing in computer graphics and game development technologies.",
+                    visible: true
+                }
+            ],
+            stats: [
+                {
+                    name: "Unity",
+                    percentage: 95,
+                    category: "Game Engines"
+                },
+                {
+                    name: "C#",
+                    percentage: 90,
+                    category: "Programming"
+                },
+                {
+                    name: "Unreal Engine",
+                    percentage: 85,
+                    category: "Game Engines"
+                },
+                {
+                    name: "JavaScript",
+                    percentage: 80,
+                    category: "Programming"
+                },
+                {
+                    name: "Blender",
+                    percentage: 75,
+                    category: "3D Graphics"
+                },
+                {
+                    name: "Shader Programming",
+                    percentage: 70,
+                    category: "Graphics"
+                }
             ]
         };
     }
@@ -175,13 +242,11 @@ class DashboardManager {
         const dataToExport = filename ? this.data[filename] : this.data;
         const exportName = filename || 'portfolio-complete';
 
-        // Try to save to user-selected location first
         const saved = await this.saveToJsonFile(exportName, dataToExport);
         
         if (saved) {
             this.showStatus(`${exportName}.json exported successfully to selected folder!`, 'success');
         } else {
-            // Fallback message for download
             this.showStatus(`${exportName}.json downloaded to default Downloads folder`, 'success');
         }
     }
@@ -199,14 +264,11 @@ class DashboardManager {
                     try {
                         const importedData = JSON.parse(e.target.result);
 
-                        // Check if it's a complete portfolio or single section
                         if (importedData.colors && importedData.personal) {
-                            // Complete portfolio import
                             this.data = importedData;
                             this.saveDataToStorage();
                             this.showStatus('Complete portfolio data imported successfully!', 'success');
                         } else {
-                            // Single section import
                             this.data[this.currentFile] = importedData;
                             this.saveDataToStorage();
                             this.showStatus(`${this.currentFile} data imported successfully!`, 'success');
@@ -234,7 +296,6 @@ class DashboardManager {
     }
 
     setupEventListeners() {
-        // File selection
         document.querySelectorAll('.file-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
@@ -244,7 +305,6 @@ class DashboardManager {
             });
         });
 
-        // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -266,12 +326,14 @@ class DashboardManager {
     renderCurrentFile() {
         const titles = {
             colors: 'Colors Configuration',
-            typography: 'Typography Settings',
+            visibility: 'Visibility Controls',
             personal: 'Personal Data',
             projects: 'Projects',
             skills: 'Skills & Technologies',
             contact: 'Contact Information',
-            social: 'Social Links'
+            social: 'Social Links',
+            timeline: 'Career Timeline',
+            stats: 'Skills Progress'
         };
 
         document.getElementById('contentTitle').textContent = titles[this.currentFile];
@@ -288,8 +350,8 @@ class DashboardManager {
             case 'colors':
                 container.innerHTML = this.renderColorsForm(data);
                 break;
-            case 'typography':
-                container.innerHTML = this.renderTypographyForm(data);
+            case 'visibility':
+                container.innerHTML = this.renderVisibilityForm(data);
                 break;
             case 'personal':
                 container.innerHTML = this.renderPersonalForm(data);
@@ -306,102 +368,221 @@ class DashboardManager {
             case 'social':
                 container.innerHTML = this.renderSocialForm(data);
                 break;
+            case 'timeline':
+                container.innerHTML = this.renderTimelineForm(data);
+                break;
+            case 'stats':
+                container.innerHTML = this.renderStatsForm(data);
+                break;
         }
 
         this.bindFormEvents();
     }
 
-    renderColorsForm(data) {
-        const colorGroups = {
-            'Primary Colors': ['primary', 'primaryHover', 'secondary', 'secondaryHover', 'accent', 'accentHover'],
-            'Background Colors': ['background', 'backgroundSecondary', 'surface', 'surfaceHover'],
-            'Text Colors': ['text', 'textSecondary', 'textMuted'],
-            'UI Elements': ['border', 'borderLight', 'link', 'linkHover'],
-            'Status Colors': ['success', 'error', 'warning', 'info'],
-            'Gradients': ['gradientStart', 'gradientEnd'],
-            'Effects': ['shadowColor', 'glowColor']
+    renderVisibilityForm(data) {
+        // Ensure data exists
+        if (!data) {
+            data = this.loadDefaultData().visibility;
+        }
+        
+        const sections = {
+            'Header Section': {
+                icon: '📋',
+                key: 'header',
+                items: {
+                    logo: 'Logo/Brand',
+                    navigation: 'Navigation Menu',
+                    dashboardLink: 'Dashboard Link',
+                    mobileMenu: 'Mobile Menu'
+                }
+            },
+            'Hero Section': {
+                icon: '🎯',
+                key: 'hero',
+                items: {
+                    title: 'Main Title',
+                    subtitle: 'Subtitle',
+                    buttons: 'Action Buttons',
+                    scrollIndicator: 'Scroll Indicator',
+                    backgroundCanvas: 'Animated Background'
+                }
+            },
+            'About Section': {
+                icon: '👤',
+                key: 'about',
+                items: {
+                    title: 'Section Title',
+                    description: 'About Description',
+                    profileImage: 'Profile Image',
+                    experienceYears: 'Experience Years',
+                    projectsCompleted: 'Projects Count',
+                    awards: 'Awards Count'
+                }
+            },
+            'Projects Section': {
+                icon: '🚀',
+                key: 'projects',
+                items: {
+                    title: 'Section Title',
+                    projectGrid: 'Project Grid',
+                    featuredOnly: 'Show Featured Only'
+                }
+            },
+            'Skills Section': {
+                icon: '💪',
+                key: 'skills',
+                items: {
+                    title: 'Section Title',
+                    categories: 'Skill Categories',
+                    icons: 'Category Icons'
+                }
+            },
+            'Contact Section': {
+                icon: '📞',
+                key: 'contact',
+                items: {
+                    title: 'Section Title',
+                    contactInfo: 'Contact Information',
+                    email: 'Email Display',
+                    phone: 'Phone Display',
+                    location: 'Location Display',
+                    contactForm: 'Contact Form',
+                    socialLinks: 'Social Links'
+                }
+            },
+            'Footer Section': {
+                icon: '📻',
+                key: 'footer',
+                items: {
+                    copyright: 'Copyright Text',
+                    socialLinks: 'Social Links'
+                }
+            },
+            'Visual Effects': {
+                icon: '✨',
+                key: 'effects',
+                items: {
+                    particles: 'Particle Effects',
+                    scrollAnimations: 'Scroll Animations',
+                    loadingScreen: 'Loading Screen',
+                    glitchEffect: 'Glitch Effects'
+                }
+            }
         };
-        
-        let html = '<div class="form-section">';
-        html += '<h3 class="form-section-title">🎨 Complete Color Palette</h3>';
-        
-        // Theme Presets
-        html += `
-            <div class="theme-presets" style="margin-bottom: 30px; padding: 20px; background: rgba(100, 255, 218, 0.1); border-radius: 10px;">
-                <h4 style="color: #64ffda; margin-bottom: 15px;">🌟 Quick Theme Presets</h4>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('cyberpunk')">Cyberpunk</button>
-                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('ocean')">Ocean Blue</button>
-                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('sunset')">Sunset</button>
-                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('forest')">Forest</button>
-                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('noir')">Dark Noir</button>
-                    <button class="btn btn-secondary" onclick="dashboard.applyThemePreset('lavender')">Lavender Dream</button>
-                </div>
-            </div>
-        `;
-        
-        // Render color groups
-        for (const [groupName, fields] of Object.entries(colorGroups)) {
-            html += `<div class="color-group" style="margin-bottom: 25px; padding: 15px; background: rgba(10,10,10,0.3); border-radius: 8px;">`;
-            html += `<h4 style="color: #667eea; margin-bottom: 15px; font-size: 1.1rem;">${groupName}</h4>`;
-            
-            fields.forEach(key => {
-                if (data[key] !== undefined) {
-                    const label = key.replace(/([A-Z])/g, ' $1').trim();
-                    const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
-                    const colorValue = data[key].startsWith('#') ? data[key] : '#000000';
-                    html += `
-                        <div class="form-group">
-                            <label class="form-label">${capitalizedLabel}</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="color" class="color-input" value="${colorValue}" data-field="${key}">
-                                <input type="text" class="form-input" value="${data[key]}" data-field="${key}-text" data-color-field="${key}" style="flex: 1;" placeholder="#hex or rgba()">
+
+        return `
+            <div class="form-section">
+                <h3 class="form-section-title">👁️ Visibility Controls</h3>
+                <p class="form-description">Control the visibility of individual elements across your portfolio. Toggle any item on or off to customize your layout.</p>
+                
+                ${Object.entries(sections).map(([sectionName, sectionData]) => {
+                    const sectionKey = sectionData.key;
+                    const sectionVisibility = data[sectionKey] || {};
+                    
+                    return `
+                        <div class="visibility-section">
+                            <h4 class="visibility-section-title">
+                                <span class="section-icon">${sectionData.icon}</span>
+                                ${sectionName}
+                                <button class="toggle-all-btn" onclick="dashboard.toggleSectionVisibility('${sectionKey}')">
+                                    Toggle All
+                                </button>
+                            </h4>
+                            <div class="visibility-grid">
+                                ${Object.entries(sectionData.items).map(([itemKey, itemName]) => {
+                                    const isVisible = sectionVisibility[itemKey] !== false;
+                                    return `
+                                        <div class="visibility-item">
+                                            <label class="visibility-label">
+                                                <input type="checkbox" 
+                                                       class="visibility-checkbox" 
+                                                       ${isVisible ? 'checked' : ''} 
+                                                       data-section="${sectionKey}" 
+                                                       data-item="${itemKey}">
+                                                <span class="checkbox-custom"></span>
+                                                <span class="item-name">${itemName}</span>
+                                            </label>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
                     `;
-                }
-            });
-            
-            html += '</div>';
-        }
-        
-        html += `
-            <div class="editor-actions">
-                <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
-                <button class="btn btn-secondary" onclick="dashboard.resetToDefaults()">🔄 Reset to Defaults</button>
-            </div>
-        </div>`;
-        
-        return html;
-    }
-
-    renderTypographyForm(data) {
-        return `
-            <div class="form-section">
-                <h3 class="form-section-title">✍️ Typography Settings</h3>
-                <div class="form-group">
-                    <label class="form-label">Primary Font Family</label>
-                    <input type="text" class="form-input" value="${data.fontFamily}" data-field="fontFamily" placeholder="'Inter', sans-serif">
-                    <small style="color: #8892a0; margin-top: 5px; display: block;">Examples: 'Roboto', 'Open Sans', 'Poppins'</small>
+                }).join('')}
+                
+                <div class="visibility-presets">
+                    <h4 class="visibility-section-title">🎛️ Quick Presets</h4>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="dashboard.applyVisibilityPreset('minimal')">🔹 Minimal</button>
+                        <button class="preset-btn" onclick="dashboard.applyVisibilityPreset('professional')">💼 Professional</button>
+                        <button class="preset-btn" onclick="dashboard.applyVisibilityPreset('showcase')">🎨 Showcase</button>
+                        <button class="preset-btn" onclick="dashboard.applyVisibilityPreset('complete')">🌟 Complete</button>
+                        <button class="preset-btn" onclick="dashboard.applyVisibilityPreset('landing')">🎯 Landing Page</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Heading Font</label>
-                    <input type="text" class="form-input" value="${data.headingFont}" data-field="headingFont" placeholder="'Inter', sans-serif">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Code Font</label>
-                    <input type="text" class="form-input" value="${data.codeFont}" data-field="codeFont" placeholder="'Fira Code', monospace">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Base Font Size</label>
-                    <input type="text" class="form-input" value="${data.fontSize}" data-field="fontSize" placeholder="16px">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Line Height</label>
-                    <input type="text" class="form-input" value="${data.lineHeight}" data-field="lineHeight" placeholder="1.6">
-                </div>
+                
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
+                    <button class="btn btn-secondary" onclick="dashboard.resetVisibility()">🔄 Reset to Default</button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderColorsForm(data) {
+        const colorGroups = {
+            'Primary Colors': ['primary', 'secondary', 'accent'],
+            'Background Colors': ['background', 'surface', 'text'],
+            'Status Colors': ['success', 'warning', 'error', 'info'],
+            'Additional Colors': ['muted', 'light', 'dark'],
+            'Gradient Colors': ['gradientStart', 'gradientEnd'],
+            'Interactive Colors': ['primaryHover', 'secondaryHover', 'accentHover'],
+            'Border & Shadow': ['border', 'shadow']
+        };
+
+        return `
+            <div class="form-section">
+                <h3 class="form-section-title">🎨 Enhanced Color Palette</h3>
+                <p class="form-description">Customize every aspect of your portfolio's color scheme with granular control over all UI elements.</p>
+                
+                ${Object.entries(colorGroups).map(([groupName, colorKeys]) => `
+                    <div class="color-group">
+                        <h4 class="color-group-title">${groupName}</h4>
+                        <div class="color-grid">
+                            ${colorKeys.map(key => {
+                                const value = data[key] || '#000000';
+                                const displayName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                                return `
+                                    <div class="color-item">
+                                        <label class="color-label">${displayName}</label>
+                                        <div class="color-input-group">
+                                            <input type="color" class="color-input" value="${value}" data-field="${key}">
+                                            <input type="text" class="color-text-input" value="${value}" data-field="${key}" placeholder="#000000">
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+                
+                <div class="color-presets">
+                    <h4 class="color-group-title">🎯 Quick Presets</h4>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="dashboard.applyColorPreset('cyberpunk')">🌃 Cyberpunk</button>
+                        <button class="preset-btn" onclick="dashboard.applyColorPreset('ocean')">🌊 Ocean</button>
+                        <button class="preset-btn" onclick="dashboard.applyColorPreset('sunset')">🌅 Sunset</button>
+                        <button class="preset-btn" onclick="dashboard.applyColorPreset('forest')">🌲 Forest</button>
+                        <button class="preset-btn" onclick="dashboard.applyColorPreset('monochrome')">⚫ Monochrome</button>
+                        <button class="preset-btn" onclick="dashboard.applyColorPreset('neon')">💡 Neon</button>
+                    </div>
+                </div>
+                
+                <div class="editor-actions">
+                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
+                    <button class="btn btn-secondary" onclick="dashboard.resetColors()">🔄 Reset to Default</button>
                 </div>
             </div>
         `;
@@ -441,6 +622,7 @@ class DashboardManager {
                 </div>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -491,6 +673,7 @@ class DashboardManager {
                 <button class="add-btn" onclick="dashboard.addProject()">➕ Add New Project</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -522,6 +705,7 @@ class DashboardManager {
                 <button class="add-btn" onclick="dashboard.addSkillCategory()">➕ Add New Category</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -549,6 +733,7 @@ class DashboardManager {
                 </div>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
@@ -580,41 +765,117 @@ class DashboardManager {
                 <button class="add-btn" onclick="dashboard.addSocialLink()">➕ Add New Link</button>
                 <div class="editor-actions">
                     <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderTimelineForm(data) {
+        return `
+            <div class="form-section">
+                <h3 class="form-section-title">📅 Career Timeline</h3>
+                <p class="form-description">Manage your career milestones and professional journey.</p>
+                <div id="timelineList">
+                    ${data.map((item, index) => `
+                        <div class="timeline-item-form" data-index="${index}" style="margin-bottom: 30px; padding: 20px; background: rgba(10,10,10,0.3); border-radius: 10px; border-left: 4px solid #64ffda;">
+                            <h4 style="color: #64ffda; margin-bottom: 15px;">Timeline Item ${index + 1}</h4>
+                            <div class="form-group">
+                                <label class="form-label">Year</label>
+                                <input type="text" class="form-input" value="${item.year}" data-field="year" data-index="${index}" placeholder="2024">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-input" value="${item.title}" data-field="title" data-index="${index}" placeholder="Senior Developer">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-input form-textarea" data-field="description" data-index="${index}" placeholder="Describe this milestone...">${item.description}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" ${item.visible !== false ? 'checked' : ''} data-field="visible" data-index="${index}" style="margin-right: 8px;">
+                                    Visible on Portfolio
+                                </label>
+                            </div>
+                            <button class="remove-btn" onclick="dashboard.removeTimelineItem(${index})">🗑️ Remove Item</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="add-btn" onclick="dashboard.addTimelineItem()">➕ Add Timeline Item</button>
+                <div class="editor-actions">
+                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderStatsForm(data) {
+        // Ensure data exists and is an array
+        if (!data || !Array.isArray(data)) {
+            data = [];
+        }
+        
+        return `
+            <div class="form-section">
+                <h3 class="form-section-title">📊 Skills Progress</h3>
+                <p class="form-description">Track your skill levels and proficiency percentages.</p>
+                <div id="statsList">
+                    ${data.map((stat, index) => `
+                        <div class="stat-item-form" data-index="${index}" style="margin-bottom: 25px; padding: 20px; background: rgba(10,10,10,0.3); border-radius: 10px;">
+                            <h4 style="color: #64ffda; margin-bottom: 15px;">Skill ${index + 1}</h4>
+                            <div class="form-group">
+                                <label class="form-label">Skill Name</label>
+                                <input type="text" class="form-input" value="${stat.name}" data-field="name" data-index="${index}" placeholder="Unity">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <input type="text" class="form-input" value="${stat.category}" data-field="category" data-index="${index}" placeholder="Game Engines">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Proficiency (%)</label>
+                                <input type="number" class="form-input" value="${stat.percentage}" data-field="percentage" data-index="${index}" min="0" max="100" placeholder="85">
+                                <div style="margin-top: 10px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${stat.percentage}%; background: linear-gradient(90deg, #64ffda, #667eea); transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                            <button class="remove-btn" onclick="dashboard.removeStatItem(${index})">🗑️ Remove Skill</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="add-btn" onclick="dashboard.addStatItem()">➕ Add Skill</button>
+                <div class="editor-actions">
+                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
                 </div>
             </div>
         `;
     }
 
     bindFormEvents() {
-        // Color inputs synchronization
         document.querySelectorAll('.color-input').forEach(input => {
             input.addEventListener('input', (e) => {
                 const textInput = e.target.parentNode.querySelector('input[type="text"]');
-                if (textInput) {
-                    textInput.value = e.target.value;
-                }
+                textInput.value = e.target.value;
             });
         });
 
-        document.querySelectorAll('input[type="text"][data-color-field]').forEach(input => {
-            input.addEventListener('input', (e) => {
-                const colorInput = e.target.parentNode.querySelector('.color-input');
-                if (colorInput && e.target.value.startsWith('#')) {
-                    try {
+        document.querySelectorAll('input[type="text"][data-field]').forEach(input => {
+            if (input.parentNode.querySelector('.color-input')) {
+                input.addEventListener('input', (e) => {
+                    const colorInput = e.target.parentNode.querySelector('.color-input');
+                    if (colorInput) {
                         colorInput.value = e.target.value;
-                    } catch (err) {
-                        // Invalid color format
                     }
-                }
-            });
+                });
+            }
         });
     }
 
-    // File saving functionality - saves to JSON files in directory
     async saveToJsonFile(filename, data) {
         const jsonString = JSON.stringify(data, null, 2);
 
-        // Try File System Access API first (Chrome/Edge)
         if ('showSaveFilePicker' in window) {
             try {
                 const fileHandle = await window.showSaveFilePicker({
@@ -637,7 +898,6 @@ class DashboardManager {
             }
         }
 
-        // Fallback to download method
         this.downloadJsonFile(filename, jsonString);
         return false;
     }
@@ -663,8 +923,8 @@ class DashboardManager {
                 case 'colors':
                     this.saveColorsData();
                     break;
-                case 'typography':
-                    this.saveTypographyData();
+                case 'visibility':
+                    this.saveVisibilityData();
                     break;
                 case 'personal':
                     this.savePersonalData();
@@ -681,68 +941,55 @@ class DashboardManager {
                 case 'social':
                     this.saveSocialData();
                     break;
+                case 'timeline':
+                    this.saveTimelineData();
+                    break;
+                case 'stats':
+                    this.saveStatsData();
+                    break;
             }
 
-            // Save to localStorage
             const saved = this.saveDataToStorage();
 
             if (saved) {
-                this.showStatus(`${this.currentFile} data saved successfully!`, 'success');
+                this.showStatus(`${this.currentFile} data saved!`, 'success');
             } else {
-                this.showStatus('Error saving to local storage', 'error');
+                this.showStatus('Error saving', 'error');
             }
 
             this.updateJSONEditor();
             this.updatePreview();
 
         } catch (error) {
-            this.showStatus('Error saving data: ' + error.message, 'error');
+            this.showStatus('Error: ' + error.message, 'error');
         }
     }
 
     saveColorsData() {
-        const inputs = document.querySelectorAll('#formEditor input[data-color-field]');
-        
+        const inputs = document.querySelectorAll('#formEditor input[data-field]');
         inputs.forEach(input => {
-            const field = input.dataset.colorField;
-            const value = input.value.trim();
-            
-            // Validate color format
-            if (value.startsWith('#') || value.startsWith('rgb') || value.startsWith('rgba')) {
-                this.data.colors[field] = value;
-            } else {
-                this.showStatus(`Invalid color format for ${field}. Use #hex or rgba() format.`, 'error');
-            }
+            this.data.colors[input.dataset.field] = input.value;
         });
     }
 
-    saveTypographyData() {
-        const inputs = document.querySelectorAll('#formEditor input[data-field]');
-        inputs.forEach(input => {
-            this.data.typography[input.dataset.field] = input.value.trim();
+    saveVisibilityData() {
+        const checkboxes = document.querySelectorAll('#formEditor .visibility-checkbox');
+        checkboxes.forEach(checkbox => {
+            const section = checkbox.dataset.section;
+            const item = checkbox.dataset.item;
+            
+            if (!this.data.visibility[section]) {
+                this.data.visibility[section] = {};
+            }
+            
+            this.data.visibility[section][item] = checkbox.checked;
         });
     }
 
     savePersonalData() {
         const inputs = document.querySelectorAll('#formEditor input[data-field], #formEditor textarea[data-field]');
         inputs.forEach(input => {
-            let value = input.value;
-            
-            // Validate and parse number inputs
-            if (input.type === 'number') {
-                value = parseInt(value);
-                if (isNaN(value) || value < 0) {
-                    this.showStatus(`Invalid number for ${input.dataset.field}`, 'error');
-                    return;
-                }
-            }
-            
-            // Validate email
-            if (input.type === 'email' && value && !value.includes('@')) {
-                this.showStatus('Invalid email format', 'error');
-                return;
-            }
-            
+            const value = input.type === 'number' ? parseInt(input.value) : input.value;
             this.data.personal[input.dataset.field] = value;
         });
     }
@@ -801,21 +1048,7 @@ class DashboardManager {
     saveContactData() {
         const inputs = document.querySelectorAll('#formEditor input[data-field]');
         inputs.forEach(input => {
-            const value = input.value.trim();
-            
-            // Validate email format
-            if (input.dataset.field === 'email' && value && !value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                this.showStatus('Invalid email format', 'error');
-                return;
-            }
-            
-            // Validate WhatsApp format (should start with +)
-            if (input.dataset.field === 'whatsapp' && value && !value.startsWith('+')) {
-                this.showStatus('WhatsApp number should be in international format (e.g., +1234567890)', 'error');
-                return;
-            }
-            
-            this.data.contact[input.dataset.field] = value;
+            this.data.contact[input.dataset.field] = input.value;
         });
     }
 
@@ -828,31 +1061,71 @@ class DashboardManager {
             const inputs = item.querySelectorAll('input[data-field]');
 
             inputs.forEach(input => {
-                socialLink[input.dataset.field] = input.value.trim();
+                socialLink[input.dataset.field] = input.value;
             });
 
-            // Validate URL format
-            if (socialLink.url && !socialLink.url.match(/^https?:\/\/.+/)) {
-                this.showStatus('Invalid URL format. URLs should start with http:// or https://', 'error');
-                return;
-            }
-
-            if (socialLink.name) {
-                social.push(socialLink);
-            }
+            social.push(socialLink);
         });
 
         this.data.social = social;
     }
 
+    saveTimelineData() {
+        const timeline = [];
+        const timelineItems = document.querySelectorAll('.timeline-item-form');
+
+        timelineItems.forEach((item, index) => {
+            const timelineEntry = { id: `timeline-${index + 1}` };
+            const inputs = item.querySelectorAll('input[data-field], textarea[data-field]');
+
+            inputs.forEach(input => {
+                const field = input.dataset.field;
+                if (field === 'visible') {
+                    timelineEntry[field] = input.checked;
+                } else {
+                    timelineEntry[field] = input.value;
+                }
+            });
+
+            timeline.push(timelineEntry);
+        });
+
+        this.data.timeline = timeline;
+    }
+
+    saveStatsData() {
+        const stats = [];
+        const statItems = document.querySelectorAll('.stat-item-form');
+
+        statItems.forEach(item => {
+            const stat = {};
+            const inputs = item.querySelectorAll('input[data-field]');
+
+            inputs.forEach(input => {
+                const field = input.dataset.field;
+                if (field === 'percentage') {
+                    stat[field] = parseInt(input.value) || 0;
+                } else {
+                    stat[field] = input.value;
+                }
+            });
+
+            stats.push(stat);
+        });
+
+        this.data.stats = stats;
+    }
+
     updateJSONEditor() {
         const editor = document.getElementById('jsonEditor');
-        editor.value = JSON.stringify(this.data[this.currentFile], null, 2);
+        let dataForEditor = this.data[this.currentFile];
+        editor.value = JSON.stringify(dataForEditor, null, 2);
     }
 
     updatePreview() {
         const preview = document.getElementById('jsonPreview');
-        preview.innerHTML = this.syntaxHighlight(JSON.stringify(this.data[this.currentFile], null, 2));
+        let dataForPreview = this.data[this.currentFile];
+        preview.innerHTML = this.syntaxHighlight(JSON.stringify(dataForPreview, null, 2));
     }
 
     syntaxHighlight(json) {
@@ -885,7 +1158,6 @@ class DashboardManager {
         }, 3000);
     }
 
-    // Project management methods
     addProject() {
         const newProject = {
             id: this.data.projects.length + 1,
@@ -909,7 +1181,6 @@ class DashboardManager {
         }
     }
 
-    // Skills management methods
     addSkillCategory() {
         const categoryName = prompt('Enter category name:');
         if (categoryName) {
@@ -928,7 +1199,6 @@ class DashboardManager {
         }
     }
 
-    // Social links management methods
     addSocialLink() {
         const newLink = {
             name: "New Platform",
@@ -947,196 +1217,285 @@ class DashboardManager {
         }
     }
 
-    // Theme preset system
-    applyThemePreset(theme) {
-        const presets = {
-            cyberpunk: {
-                primary: "#64ffda",
-                primaryHover: "#52e7c7",
-                secondary: "#667eea",
-                secondaryHover: "#5568d3",
-                accent: "#ff6b6b",
-                accentHover: "#ff5252",
-                background: "#0a0a0a",
-                backgroundSecondary: "#1a1a2e",
-                surface: "#16213e",
-                surfaceHover: "#1f2a46",
-                text: "#ffffff",
-                textSecondary: "#b8c5d6",
-                textMuted: "#8892a0",
-                border: "#2c3e50",
-                borderLight: "#34495e",
-                link: "#64ffda",
-                linkHover: "#52e7c7",
-                success: "#4caf50",
-                error: "#f44336",
-                warning: "#ff9800",
-                info: "#2196f3",
-                gradientStart: "#667eea",
-                gradientEnd: "#764ba2",
-                shadowColor: "rgba(0, 0, 0, 0.3)",
-                glowColor: "rgba(100, 255, 218, 0.2)"
-            },
-            ocean: {
-                primary: "#00b4d8",
-                primaryHover: "#0096c7",
-                secondary: "#4361ee",
-                secondaryHover: "#3a51d4",
-                accent: "#7209b7",
-                accentHover: "#560bad",
-                background: "#03045e",
-                backgroundSecondary: "#023e8a",
-                surface: "#0077b6",
-                surfaceHover: "#0096c7",
-                text: "#caf0f8",
-                textSecondary: "#90e0ef",
-                textMuted: "#48cae4",
-                border: "#0096c7",
-                borderLight: "#00b4d8",
-                link: "#00d4ff",
-                linkHover: "#00b8e6",
-                success: "#06ffa5",
-                error: "#ff006e",
-                warning: "#ffb703",
-                info: "#0096c7",
-                gradientStart: "#4361ee",
-                gradientEnd: "#7209b7",
-                shadowColor: "rgba(3, 4, 94, 0.5)",
-                glowColor: "rgba(0, 180, 216, 0.3)"
-            },
-            sunset: {
-                primary: "#ff6b35",
-                primaryHover: "#ff5722",
-                secondary: "#f7931e",
-                secondaryHover: "#e67e00",
-                accent: "#fbb040",
-                accentHover: "#f9a825",
-                background: "#1a0b2e",
-                backgroundSecondary: "#2e1a47",
-                surface: "#432874",
-                surfaceHover: "#52368c",
-                text: "#fff5e4",
-                textSecondary: "#ffe4c0",
-                textMuted: "#ffc98b",
-                border: "#5b3a70",
-                borderLight: "#734a94",
-                link: "#ff6b35",
-                linkHover: "#ff5722",
-                success: "#4caf50",
-                error: "#e53935",
-                warning: "#fbb040",
-                info: "#29b6f6",
-                gradientStart: "#ff6b35",
-                gradientEnd: "#f7931e",
-                shadowColor: "rgba(26, 11, 46, 0.4)",
-                glowColor: "rgba(255, 107, 53, 0.3)"
-            },
-            forest: {
-                primary: "#52b788",
-                primaryHover: "#40916c",
-                secondary: "#2d6a4f",
-                secondaryHover: "#1b4332",
-                accent: "#95d5b2",
-                accentHover: "#74c69d",
-                background: "#081c15",
-                backgroundSecondary: "#1b4332",
-                surface: "#2d6a4f",
-                surfaceHover: "#40916c",
-                text: "#d8f3dc",
-                textSecondary: "#b7e4c7",
-                textMuted: "#95d5b2",
-                border: "#40916c",
-                borderLight: "#52b788",
-                link: "#95d5b2",
-                linkHover: "#74c69d",
-                success: "#52b788",
-                error: "#e63946",
-                warning: "#f4a261",
-                info: "#2a9d8f",
-                gradientStart: "#52b788",
-                gradientEnd: "#2d6a4f",
-                shadowColor: "rgba(8, 28, 21, 0.5)",
-                glowColor: "rgba(82, 183, 136, 0.2)"
-            },
-            noir: {
-                primary: "#e0e0e0",
-                primaryHover: "#f5f5f5",
-                secondary: "#9e9e9e",
-                secondaryHover: "#bdbdbd",
-                accent: "#616161",
-                accentHover: "#757575",
-                background: "#000000",
-                backgroundSecondary: "#121212",
-                surface: "#1e1e1e",
-                surfaceHover: "#2a2a2a",
-                text: "#ffffff",
-                textSecondary: "#e0e0e0",
-                textMuted: "#9e9e9e",
-                border: "#424242",
-                borderLight: "#616161",
-                link: "#e0e0e0",
-                linkHover: "#f5f5f5",
-                success: "#66bb6a",
-                error: "#ef5350",
-                warning: "#ffa726",
-                info: "#42a5f5",
-                gradientStart: "#424242",
-                gradientEnd: "#212121",
-                shadowColor: "rgba(0, 0, 0, 0.6)",
-                glowColor: "rgba(255, 255, 255, 0.1)"
-            },
-            lavender: {
-                primary: "#c77dff",
-                primaryHover: "#b565f2",
-                secondary: "#9d4edd",
-                secondaryHover: "#8b3fd9",
-                accent: "#e0aaff",
-                accentHover: "#d49aed",
-                background: "#10002b",
-                backgroundSecondary: "#240046",
-                surface: "#3c096c",
-                surfaceHover: "#5a189a",
-                text: "#f0e6ff",
-                textSecondary: "#e0d1ff",
-                textMuted: "#c9b3f5",
-                border: "#5a189a",
-                borderLight: "#7209b7",
-                link: "#c77dff",
-                linkHover: "#b565f2",
-                success: "#4caf50",
-                error: "#ff006e",
-                warning: "#ffb703",
-                info: "#4cc9f0",
-                gradientStart: "#c77dff",
-                gradientEnd: "#7209b7",
-                shadowColor: "rgba(16, 0, 43, 0.5)",
-                glowColor: "rgba(199, 125, 255, 0.3)"
-            }
+    addTimelineItem() {
+        const newItem = {
+            id: `timeline-${this.data.timeline.length + 1}`,
+            year: new Date().getFullYear().toString(),
+            title: "New Milestone",
+            description: "Describe this achievement or milestone...",
+            visible: true
         };
 
-        if (presets[theme]) {
-            this.data.colors = { ...this.data.colors, ...presets[theme] };
+        this.data.timeline.push(newItem);
+        this.renderCurrentFile();
+    }
+
+    removeTimelineItem(index) {
+        if (confirm('Are you sure you want to remove this timeline item?')) {
+            this.data.timeline.splice(index, 1);
             this.renderCurrentFile();
-            this.showStatus(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme applied!`, 'success');
         }
     }
 
-    // Reset colors to default
-    resetToDefaults() {
-        if (confirm('Reset all colors to default values?')) {
-            const tempData = { ...this.data };
-            this.loadDefaultData();
-            
-            // Preserve non-color data
-            this.data.personal = tempData.personal;
-            this.data.projects = tempData.projects;
-            this.data.skills = tempData.skills;
-            this.data.contact = tempData.contact;
-            this.data.social = tempData.social;
-            
-            this.saveDataToStorage();
+    addStatItem() {
+        const newStat = {
+            name: "New Skill",
+            percentage: 50,
+            category: "Category"
+        };
+
+        this.data.stats.push(newStat);
+        this.renderCurrentFile();
+    }
+
+    removeStatItem(index) {
+        if (confirm('Are you sure you want to remove this skill?')) {
+            this.data.stats.splice(index, 1);
             this.renderCurrentFile();
-            this.showStatus('Colors reset to defaults', 'success');
+        }
+    }
+
+    applyColorPreset(presetName) {
+        const presets = {
+            cyberpunk: {
+                primary: "#00ff9f",
+                secondary: "#ff0080",
+                accent: "#ffff00",
+                background: "#000011",
+                surface: "#1a0033",
+                text: "#ffffff",
+                success: "#00ff9f",
+                warning: "#ffaa00",
+                error: "#ff0080",
+                info: "#00aaff",
+                muted: "#666699",
+                light: "#f0f0ff",
+                dark: "#000011",
+                gradientStart: "#ff0080",
+                gradientEnd: "#00ff9f",
+                border: "rgba(0, 255, 159, 0.3)",
+                shadow: "rgba(255, 0, 128, 0.4)",
+                primaryHover: "#00cc7f",
+                secondaryHover: "#cc0066",
+                accentHover: "#cccc00"
+            },
+            ocean: {
+                primary: "#00bcd4",
+                secondary: "#0277bd",
+                accent: "#ff5722",
+                background: "#0a1929",
+                surface: "#1e3a8a",
+                text: "#ffffff",
+                success: "#4caf50",
+                warning: "#ff9800",
+                error: "#f44336",
+                info: "#2196f3",
+                muted: "#607d8b",
+                light: "#e3f2fd",
+                dark: "#0d47a1",
+                gradientStart: "#0277bd",
+                gradientEnd: "#00bcd4",
+                border: "rgba(0, 188, 212, 0.3)",
+                shadow: "rgba(2, 119, 189, 0.4)",
+                primaryHover: "#0097a7",
+                secondaryHover: "#01579b",
+                accentHover: "#d84315"
+            },
+            sunset: {
+                primary: "#ff6b35",
+                secondary: "#f7931e",
+                accent: "#ffd23f",
+                background: "#1a0f0a",
+                surface: "#2d1b0e",
+                text: "#ffffff",
+                success: "#8bc34a",
+                warning: "#ff9800",
+                error: "#f44336",
+                info: "#03a9f4",
+                muted: "#8d6e63",
+                light: "#fff3e0",
+                dark: "#3e2723",
+                gradientStart: "#f7931e",
+                gradientEnd: "#ff6b35",
+                border: "rgba(255, 107, 53, 0.3)",
+                shadow: "rgba(247, 147, 30, 0.4)",
+                primaryHover: "#e55722",
+                secondaryHover: "#ef6c00",
+                accentHover: "#ffc107"
+            },
+            forest: {
+                primary: "#4caf50",
+                secondary: "#2e7d32",
+                accent: "#8bc34a",
+                background: "#0d1b0f",
+                surface: "#1b2e20",
+                text: "#ffffff",
+                success: "#4caf50",
+                warning: "#ff9800",
+                error: "#f44336",
+                info: "#2196f3",
+                muted: "#689f38",
+                light: "#e8f5e8",
+                dark: "#1b5e20",
+                gradientStart: "#2e7d32",
+                gradientEnd: "#4caf50",
+                border: "rgba(76, 175, 80, 0.3)",
+                shadow: "rgba(46, 125, 50, 0.4)",
+                primaryHover: "#388e3c",
+                secondaryHover: "#1b5e20",
+                accentHover: "#689f38"
+            },
+            monochrome: {
+                primary: "#ffffff",
+                secondary: "#e0e0e0",
+                accent: "#9e9e9e",
+                background: "#000000",
+                surface: "#212121",
+                text: "#ffffff",
+                success: "#ffffff",
+                warning: "#e0e0e0",
+                error: "#9e9e9e",
+                info: "#bdbdbd",
+                muted: "#757575",
+                light: "#fafafa",
+                dark: "#212121",
+                gradientStart: "#e0e0e0",
+                gradientEnd: "#ffffff",
+                border: "rgba(255, 255, 255, 0.2)",
+                shadow: "rgba(255, 255, 255, 0.1)",
+                primaryHover: "#f5f5f5",
+                secondaryHover: "#bdbdbd",
+                accentHover: "#757575"
+            },
+            neon: {
+                primary: "#ff073a",
+                secondary: "#39ff14",
+                accent: "#ff073a",
+                background: "#000000",
+                surface: "#0a0a0a",
+                text: "#ffffff",
+                success: "#39ff14",
+                warning: "#ffff00",
+                error: "#ff073a",
+                info: "#00ffff",
+                muted: "#ff00ff",
+                light: "#ffffff",
+                dark: "#000000",
+                gradientStart: "#39ff14",
+                gradientEnd: "#ff073a",
+                border: "rgba(255, 7, 58, 0.5)",
+                shadow: "rgba(57, 255, 20, 0.5)",
+                primaryHover: "#cc0529",
+                secondaryHover: "#2ecc10",
+                accentHover: "#cc0529"
+            }
+        };
+
+        if (presets[presetName]) {
+            this.data.colors = { ...this.data.colors, ...presets[presetName] };
+            this.renderCurrentFile();
+            this.showStatus(`${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset applied!`, 'success');
+        }
+    }
+
+    resetColors() {
+        if (confirm('Reset all colors to default?')) {
+            this.loadDefaultData();
+            this.renderCurrentFile();
+            this.showStatus('Colors reset!', 'success');
+        }
+    }
+
+    applyVisibilityPreset(presetName) {
+        const presets = {
+            minimal: {
+                header: { logo: true, navigation: true, dashboardLink: false, mobileMenu: true },
+                hero: { title: true, subtitle: true, buttons: false, scrollIndicator: false, backgroundCanvas: false },
+                about: { title: true, description: true, profileImage: false, experienceYears: false, projectsCompleted: false, awards: false },
+                projects: { title: true, projectGrid: true, featuredOnly: true },
+                skills: { title: true, categories: true, icons: false },
+                contact: { title: true, contactInfo: true, email: true, phone: false, location: false, contactForm: false, socialLinks: true },
+                footer: { copyright: true, socialLinks: false },
+                effects: { particles: false, scrollAnimations: false, loadingScreen: false, glitchEffect: false }
+            },
+            professional: {
+                header: { logo: true, navigation: true, dashboardLink: true, mobileMenu: true },
+                hero: { title: true, subtitle: true, buttons: true, scrollIndicator: true, backgroundCanvas: false },
+                about: { title: true, description: true, profileImage: true, experienceYears: true, projectsCompleted: true, awards: true },
+                projects: { title: true, projectGrid: true, featuredOnly: true },
+                skills: { title: true, categories: true, icons: true },
+                contact: { title: true, contactInfo: true, email: true, phone: true, location: true, contactForm: true, socialLinks: true },
+                footer: { copyright: true, socialLinks: true },
+                effects: { particles: false, scrollAnimations: true, loadingScreen: true, glitchEffect: false }
+            },
+            showcase: {
+                header: { logo: true, navigation: true, dashboardLink: true, mobileMenu: true },
+                hero: { title: true, subtitle: true, buttons: true, scrollIndicator: true, backgroundCanvas: true },
+                about: { title: true, description: true, profileImage: true, experienceYears: true, projectsCompleted: true, awards: true },
+                projects: { title: true, projectGrid: true, featuredOnly: false },
+                skills: { title: true, categories: true, icons: true },
+                contact: { title: true, contactInfo: true, email: true, phone: true, location: true, contactForm: true, socialLinks: true },
+                footer: { copyright: true, socialLinks: true },
+                effects: { particles: true, scrollAnimations: true, loadingScreen: true, glitchEffect: true }
+            },
+            complete: {
+                header: { logo: true, navigation: true, dashboardLink: true, mobileMenu: true },
+                hero: { title: true, subtitle: true, buttons: true, scrollIndicator: true, backgroundCanvas: true },
+                about: { title: true, description: true, profileImage: true, experienceYears: true, projectsCompleted: true, awards: true },
+                projects: { title: true, projectGrid: true, featuredOnly: false },
+                skills: { title: true, categories: true, icons: true },
+                contact: { title: true, contactInfo: true, email: true, phone: true, location: true, contactForm: true, socialLinks: true },
+                footer: { copyright: true, socialLinks: true },
+                effects: { particles: true, scrollAnimations: true, loadingScreen: true, glitchEffect: true }
+            },
+            landing: {
+                header: { logo: true, navigation: false, dashboardLink: false, mobileMenu: false },
+                hero: { title: true, subtitle: true, buttons: true, scrollIndicator: true, backgroundCanvas: true },
+                about: { title: false, description: false, profileImage: false, experienceYears: false, projectsCompleted: false, awards: false },
+                projects: { title: true, projectGrid: true, featuredOnly: true },
+                skills: { title: false, categories: false, icons: false },
+                contact: { title: true, contactInfo: false, email: false, phone: false, location: false, contactForm: true, socialLinks: true },
+                footer: { copyright: true, socialLinks: true },
+                effects: { particles: true, scrollAnimations: true, loadingScreen: true, glitchEffect: true }
+            }
+        };
+
+        if (presets[presetName]) {
+            this.data.visibility = presets[presetName];
+            this.renderCurrentFile();
+            this.showStatus(`${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset applied!`, 'success');
+        }
+    }
+
+    toggleSectionVisibility(sectionKey) {
+        const section = this.data.visibility[sectionKey];
+        if (!section) return;
+
+        const allVisible = Object.values(section).every(value => value === true);
+        const newState = !allVisible;
+
+        Object.keys(section).forEach(key => {
+            section[key] = newState;
+        });
+
+        this.renderCurrentFile();
+        this.showStatus(`${sectionKey} section ${newState ? 'enabled' : 'disabled'}!`, 'success');
+    }
+
+    resetVisibility() {
+        if (confirm('Reset all visibility settings to default?')) {
+            this.data.visibility = {
+                header: { logo: true, navigation: true, dashboardLink: true, mobileMenu: true },
+                hero: { title: true, subtitle: true, buttons: true, scrollIndicator: true, backgroundCanvas: true },
+                about: { title: true, description: true, profileImage: true, experienceYears: true, projectsCompleted: true, awards: true },
+                projects: { title: true, projectGrid: true, featuredOnly: true },
+                skills: { title: true, categories: true, icons: true },
+                contact: { title: true, contactInfo: true, email: true, phone: true, location: true, contactForm: true, socialLinks: true },
+                footer: { copyright: true, socialLinks: true },
+                effects: { particles: true, scrollAnimations: true, loadingScreen: true, glitchEffect: true }
+            };
+            this.renderCurrentFile();
+            this.showStatus('Visibility reset!', 'success');
         }
     }
 }
@@ -1157,9 +1516,9 @@ function formatJSON() {
     try {
         const parsed = JSON.parse(editor.value);
         editor.value = JSON.stringify(parsed, null, 2);
-        dashboard.showStatus('JSON formatted successfully!', 'success');
+        dashboard.showStatus('JSON formatted!', 'success');
     } catch (error) {
-        dashboard.showStatus('Cannot format invalid JSON: ' + error.message, 'error');
+        dashboard.showStatus('Cannot format invalid JSON', 'error');
     }
 }
 
@@ -1168,25 +1527,16 @@ function saveJSON() {
     try {
         const parsed = JSON.parse(editor.value);
         dashboard.data[dashboard.currentFile] = parsed;
-
-        // Save to localStorage
-        const saved = dashboard.saveDataToStorage();
-
-        if (saved) {
-            dashboard.showStatus(`${dashboard.currentFile} data saved successfully!`, 'success');
-        } else {
-            dashboard.showStatus('Error saving to local storage', 'error');
-        }
-
+        dashboard.saveDataToStorage();
+        dashboard.showStatus(`${dashboard.currentFile} saved!`, 'success');
         dashboard.renderCurrentFile();
     } catch (error) {
-        dashboard.showStatus('Cannot save invalid JSON: ' + error.message, 'error');
+        dashboard.showStatus('Cannot save invalid JSON', 'error');
     }
 }
 
 function previewPortfolio() {
-    // Open portfolio in new tab
-    window.open('Portoflio/index.html', '_blank');
+    window.open('index.html', '_blank');
 }
 
 // Initialize dashboard
