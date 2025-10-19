@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Game Developer Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-content">
+            <div class="game-controller">
+                <div class="controller-body"></div>
+                <div class="dpad"></div>
+                <div class="buttons"></div>
+            </div>
+            <div class="loading-text">Loading Blog...</div>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">GameDev</span>
+                <div class="pixel-cursor"></div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="index.html#timeline">Timeline</a></li>
+                <li><a href="index.html#stats">Stats</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+                <li><a href="dashboard.html" class="dashboard-link">Dashboard</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Header -->
+    <section class="blog-header">
+        <div class="container">
+            <div class="blog-hero">
+                <h1 class="blog-title">Developer Blog</h1>
+                <p class="blog-subtitle">Insights, tutorials, and thoughts on game development</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Posts -->
+    <section class="blog-posts">
+        <div class="container">
+            <div class="blog-grid" id="blogGrid">
+                <!-- Blog posts will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Post Modal -->
+    <div id="blogModal" class="blog-modal">
+        <div class="blog-modal-content">
+            <div class="blog-modal-header">
+                <h2 id="modalTitle">Blog Post Title</h2>
+                <button class="blog-modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="blog-modal-body">
+                <div class="blog-meta">
+                    <span id="modalDate">Date</span>
+                </div>
+                <div class="blog-content" id="modalContent">
+                    Blog post content will be displayed here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">
+                    <p>&copy; 2024 Game Developer Portfolio. All rights reserved.</p>
+                </div>
+                <div class="social-links" id="socialLinks">
+                    <!-- Social links will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Particles Container -->
+    <div id="particles"></div>
+
+    <script src="blog.js"></script>
+</body>
+</html>
