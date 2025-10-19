@@ -41,7 +41,7 @@
       "profileImage": true,
       "experienceYears": true,
       "projectsCompleted": true,
-      "awards": true
+      "awards": false
     },
     "projects": {
       "title": true,
@@ -77,7 +77,7 @@
     "name": "Yahia Fawzy",
     "title": "Game Developer & Designer",
     "about": "Passionate game developer with 5+ years of experience creating immersive interactive experiences. Specialized in Unity, Unreal Engine, and cutting-edge game technologies. I believe in the power of games to tell stories, connect people, and create unforgettable moments.",
-    "experienceYears": 5,
+    "experienceYears": 7,
     "projectsCompleted": 23,
     "awards": 7,
     "profileImage": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23667eea'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='60' fill='white' text-anchor='middle' dy='.3em'%3EAJ%3C/text%3E%3C/svg%3E"
