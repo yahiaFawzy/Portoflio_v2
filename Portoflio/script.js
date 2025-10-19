@@ -1,4 +1,61 @@
 // Portfolio Manager - Reads from JSON file (GitHub Pages Compatible)
+
+// --- SVG d-attribute sanitizer (hotfix for malformed injected SVG paths) ---
+(function () {
+    function sanitizeDValue(d) {
+        if (!d || typeof d !== 'string') return d;
+        // Add space where letter commands are accidentally concatenated like "tc" -> "t c"
+        // Only fix common pairs (t followed by c or c followed by t) to avoid over-editing.
+        d = d.replace(/t(?=c)/g, 't ');
+        d = d.replace(/c(?=t)/g, 'c ');
+        // Insert missing comma before negative numbers when directly attached to a preceding number:  "0.4-0.2" -> "0.4,-0.2"
+        // Use lookahead to avoid touching exponent notation.
+        d = d.replace(/(\d(?:\.\d+)?)-(?=\d)/g, '$1,-');
+        // Remove repeated commas if any created accidentally
+        d = d.replace(/,+/g, ',');
+        return d;
+    }
+
+    function sanitizeSVGPaths(html) {
+        if (typeof html !== 'string') return html;
+        // Replace every d="..."/d='...' occurrence with sanitized content
+        return html.replace(/(d=)(["'])(.*?)\2/gi, function (_, prefix, quote, dContent) {
+            const fixed = sanitizeDValue(dContent);
+            return prefix + quote + fixed + quote;
+        });
+    }
+
+    function patchjQuery() {
+        if (!window.jQuery) return false;
+        // Keep original if exists
+        const orig = jQuery.htmlPrefilter;
+        jQuery.htmlPrefilter = function (html) {
+            if (typeof orig === 'function') {
+                try { html = orig(html); } catch (e) { /* ignore and continue */ }
+            }
+            try {
+                return sanitizeSVGPaths(html);
+            } catch (e) {
+                return html;
+            }
+        };
+        return true;
+    }
+
+    if (window.jQuery) {
+        patchjQuery();
+    } else {
+        // If jQuery not loaded yet, try to patch after DOM ready (so many bundles load jQuery early)
+        document.addEventListener('DOMContentLoaded', function () {
+            patchjQuery();
+        });
+        // Also try on window load as a fallback
+        window.addEventListener('load', function () {
+            patchjQuery();
+        });
+    }
+})();
+
 class PortfolioManager {
     constructor() {
         this.config = {
