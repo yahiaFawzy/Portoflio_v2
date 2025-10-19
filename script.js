@@ -48,7 +48,15 @@ class DashboardManager {
                 accent: "#ff6b6b",
                 background: "#0a0a0a",
                 surface: "#1a1a2e",
-                text: "#ffffff"
+                text: "#ffffff",
+                navbarBg: "rgba(10, 10, 10, 0.95)",
+                footerBg: "rgba(10, 10, 10, 0.9)",
+                cardBg: "rgba(26, 26, 46, 0.8)",
+                panelBg: "rgba(102, 126, 234, 0.1)",
+                border: "rgba(102, 126, 234, 0.2)",
+                mutedText: "rgba(255, 255, 255, 0.7)",
+                gradientStart: "#667eea",
+                gradientEnd: "#764ba2"
             },
             personal: {
                 name: "Alex Johnson",
@@ -762,12 +770,26 @@ class DashboardManager {
 
     updateJSONEditor() {
         const editor = document.getElementById('jsonEditor');
-        editor.value = JSON.stringify(this.data[this.currentFile], null, 2);
+        let dataForEditor = this.data[this.currentFile];
+        if (this.currentFile === 'visibility') {
+            dataForEditor = {
+                sectionVisibility: this.data.sectionVisibility || {},
+                visibilityOptions: this.data.visibilityOptions || {}
+            };
+        }
+        editor.value = JSON.stringify(dataForEditor, null, 2);
     }
 
     updatePreview() {
         const preview = document.getElementById('jsonPreview');
-        preview.innerHTML = this.syntaxHighlight(JSON.stringify(this.data[this.currentFile], null, 2));
+        let dataForPreview = this.data[this.currentFile];
+        if (this.currentFile === 'visibility') {
+            dataForPreview = {
+                sectionVisibility: this.data.sectionVisibility || {},
+                visibilityOptions: this.data.visibilityOptions || {}
+            };
+        }
+        preview.innerHTML = this.syntaxHighlight(JSON.stringify(dataForPreview, null, 2));
     }
 
     syntaxHighlight(json) {
@@ -889,7 +911,12 @@ function saveJSON() {
     const editor = document.getElementById('jsonEditor');
     try {
         const parsed = JSON.parse(editor.value);
-        dashboard.data[dashboard.currentFile] = parsed;
+        if (dashboard.currentFile === 'visibility') {
+            dashboard.data.sectionVisibility = parsed.sectionVisibility || {};
+            dashboard.data.visibilityOptions = parsed.visibilityOptions || {};
+        } else {
+            dashboard.data[dashboard.currentFile] = parsed;
+        }
 
         // Save to localStorage
         const saved = dashboard.saveDataToStorage();
