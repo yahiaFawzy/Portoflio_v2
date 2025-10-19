@@ -205,6 +205,7 @@ class DashboardManager {
     renderCurrentFile() {
         const titles = {
             colors: 'Colors Configuration',
+            visibility: 'Visibility & Layout',
             personal: 'Personal Data',
             projects: 'Projects',
             skills: 'Skills & Technologies',
@@ -226,6 +227,9 @@ class DashboardManager {
             case 'colors':
                 container.innerHTML = this.renderColorsForm(data);
                 break;
+            case 'visibility':
+                container.innerHTML = this.renderVisibilityForm();
+                break;
             case 'personal':
                 container.innerHTML = this.renderPersonalForm(data);
                 break;
@@ -244,6 +248,91 @@ class DashboardManager {
         }
 
         this.bindFormEvents();
+    }
+
+    renderVisibilityForm() {
+        // Initialize defaults if missing
+        if (!this.data.sectionVisibility) {
+            this.data.sectionVisibility = {
+                home: true,
+                about: true,
+                projects: true,
+                skills: true,
+                timeline: true,
+                stats: true,
+                contact: true,
+                blog: true,
+                header: true
+            };
+        }
+
+        const sectionVisibility = this.data.sectionVisibility;
+
+        // Item-level toggles within sections
+        const aboutItems = [
+            { key: 'showExperience', label: 'About: Years Experience' },
+            { key: 'showProjectsCompleted', label: 'About: Projects Completed' },
+            { key: 'showAwards', label: 'About: Awards Won' }
+        ];
+
+        if (!this.data.visibilityOptions) {
+            this.data.visibilityOptions = {
+                about: {
+                    showExperience: true,
+                    showProjectsCompleted: true,
+                    showAwards: true
+                },
+                header: {
+                    showBlogLink: true,
+                    showDashboardLink: true
+                }
+            };
+        }
+
+        const v = this.data.visibilityOptions;
+
+        return `
+            <div class="form-section">
+                <h3 class="form-section-title">👁️ Section Visibility</h3>
+                <div class="form-group">
+                    ${Object.entries(sectionVisibility).map(([key, val]) => `
+                        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+                            <input type="checkbox" ${val ? 'checked' : ''} data-type="sectionVisibility" data-field="${key}">
+                            ${key.charAt(0).toUpperCase() + key.slice(1)}
+                        </label>
+                    `).join('')}
+                </div>
+
+                <h3 class="form-section-title" style="margin-top:24px;">🎛️ Item Visibility</h3>
+                <div class="form-group" style="padding:12px 16px;background:rgba(10,10,10,0.3);border-radius:10px;">
+                    <div style="font-weight:600;margin-bottom:8px;color:#64ffda;">About Section</div>
+                    ${aboutItems.map(it => `
+                        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+                            <input type="checkbox" ${v.about[it.key] ? 'checked' : ''} data-type="visibilityOptions" data-scope="about" data-field="${it.key}">
+                            ${it.label}
+                        </label>
+                    `).join('')}
+                </div>
+
+                <div class="form-group" style="padding:12px 16px;background:rgba(10,10,10,0.3);border-radius:10px;margin-top:12px;">
+                    <div style="font-weight:600;margin-bottom:8px;color:#64ffda;">Header</div>
+                    ${[
+                        { key: 'showBlogLink', label: 'Show Blog link' },
+                        { key: 'showDashboardLink', label: 'Show Dashboard link' }
+                    ].map(it => `
+                        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+                            <input type="checkbox" ${v.header[it.key] ? 'checked' : ''} data-type="visibilityOptions" data-scope="header" data-field="${it.key}">
+                            ${it.label}
+                        </label>
+                    `).join('')}
+                </div>
+
+                <div class="editor-actions">
+                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData('sectionVisibility')">📤 Export Section Visibility</button>
+                </div>
+            </div>
+        `;
     }
 
     renderColorsForm(data) {
@@ -524,6 +613,9 @@ class DashboardManager {
                 case 'colors':
                     this.saveColorsData();
                     break;
+                case 'visibility':
+                    this.saveVisibilityData();
+                    break;
                 case 'personal':
                     this.savePersonalData();
                     break;
@@ -562,6 +654,25 @@ class DashboardManager {
         const inputs = document.querySelectorAll('#formEditor input[data-field]');
         inputs.forEach(input => {
             this.data.colors[input.dataset.field] = input.value;
+        });
+    }
+
+    saveVisibilityData() {
+        // Sections
+        const sectionInputs = document.querySelectorAll('#formEditor input[data-type="sectionVisibility"]');
+        if (!this.data.sectionVisibility) this.data.sectionVisibility = {};
+        sectionInputs.forEach(input => {
+            this.data.sectionVisibility[input.dataset.field] = input.checked;
+        });
+
+        // Items
+        if (!this.data.visibilityOptions) this.data.visibilityOptions = {};
+        const itemInputs = document.querySelectorAll('#formEditor input[data-type="visibilityOptions"]');
+        itemInputs.forEach(input => {
+            const scope = input.dataset.scope;
+            const field = input.dataset.field;
+            if (!this.data.visibilityOptions[scope]) this.data.visibilityOptions[scope] = {};
+            this.data.visibilityOptions[scope][field] = input.checked;
         });
     }
 
