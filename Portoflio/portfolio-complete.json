@@ -25,7 +25,7 @@
     "header": {
       "logo": true,
       "navigation": true,
-      "dashboardLink": false,
+      "dashboardLink": true,
       "mobileMenu": true
     },
     "hero": {
@@ -46,7 +46,7 @@
     "projects": {
       "title": true,
       "projectGrid": true,
-      "featuredOnly": false
+      "featuredOnly": true
     },
     "skills": {
       "title": true,
@@ -74,7 +74,7 @@
     }
   },
   "personal": {
-    "name": "Yahia Fawzy10",
+    "name": "Alex Johnson",
     "title": "Game Developer & Designer",
     "about": "Passionate game developer with 5+ years of experience creating immersive interactive experiences. Specialized in Unity, Unreal Engine, and cutting-edge game technologies. I believe in the power of games to tell stories, connect people, and create unforgettable moments.",
     "experienceYears": 5,
@@ -85,7 +85,7 @@
   "projects": [
     {
       "id": 1,
-      "title": "Cyber Runner 2077",
+      "title": "create portolio",
       "description": "A futuristic endless runner game with cyberpunk aesthetics, featuring dynamic lighting and procedural level generation.",
       "image": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23667eea'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3ECyber Runner%3C/text%3E%3C/svg%3E",
       "technologies": [
@@ -201,33 +201,33 @@
   "stats": [
     {
       "name": "Unity",
-      "category": "Game Engines",
-      "percentage": 95
+      "percentage": 95,
+      "category": "Game Engines"
     },
     {
       "name": "C#",
-      "category": "Programming",
-      "percentage": 90
+      "percentage": 90,
+      "category": "Programming"
     },
     {
       "name": "Unreal Engine",
-      "category": "Game Engines",
-      "percentage": 85
+      "percentage": 85,
+      "category": "Game Engines"
     },
     {
       "name": "JavaScript",
-      "category": "Programming",
-      "percentage": 80
+      "percentage": 80,
+      "category": "Programming"
     },
     {
       "name": "Blender",
-      "category": "3D Graphics",
-      "percentage": 75
+      "percentage": 75,
+      "category": "3D Graphics"
     },
     {
       "name": "Shader Programming",
-      "category": "Graphics",
-      "percentage": 70
+      "percentage": 70,
+      "category": "Graphics"
     }
   ]
 }
