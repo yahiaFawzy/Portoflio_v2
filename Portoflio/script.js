@@ -11,8 +11,7 @@ class PortfolioManager {
             timeline: [],
             stats: [],
             blogs: [],
-            sectionVisibility: {},
-            timelineSettings: {}
+            sectionVisibility: {}
         };
         this.isLoading = true;
         this.init();
@@ -44,7 +43,6 @@ class PortfolioManager {
                 this.config.stats = portfolioData.stats || this.getDefaultStats();
                 this.config.blogs = portfolioData.blogs || this.getDefaultBlogs();
                 this.config.sectionVisibility = portfolioData.sectionVisibility || this.getDefaultSectionVisibility();
-                this.config.timelineSettings = portfolioData.timelineSettings || this.getDefaultTimelineSettings();
 
                 console.log('Portfolio data loaded successfully from dashboard');
             } else {
@@ -161,44 +159,34 @@ class PortfolioManager {
     getDefaultTimeline() {
         return [
             {
+                id: 'timeline-1',
                 year: "2024",
                 title: "Senior Game Developer",
                 description: "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics.",
-                visible: true,
-                size: "md"
+                visible: true
             },
             {
+                id: 'timeline-2',
                 year: "2022",
                 title: "Game Developer",
                 description: "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics.",
-                visible: true,
-                size: "md"
+                visible: true
             },
             {
+                id: 'timeline-3',
                 year: "2020",
                 title: "Junior Developer",
                 description: "Started career in game development, working on mobile games and learning industry best practices.",
-                visible: true,
-                size: "md"
+                visible: true
             },
             {
+                id: 'timeline-4',
                 year: "2019",
                 title: "Computer Science Graduate",
                 description: "Graduated with honors, specializing in computer graphics and game development technologies.",
-                visible: true,
-                size: "md"
+                visible: true
             }
         ];
-    }
-
-    getDefaultTimelineSettings() {
-        return {
-            compact: false,
-            fontScale: 1,
-            markerWidth: 120,
-            lineThickness: 3,
-            itemMargin: 40
-        };
     }
 
     getDefaultStats() {
@@ -286,7 +274,6 @@ class PortfolioManager {
         this.config.stats = this.getDefaultStats();
         this.config.blogs = this.getDefaultBlogs();
         this.config.sectionVisibility = this.getDefaultSectionVisibility();
-        this.config.timelineSettings = this.getDefaultTimelineSettings();
     }
 
     initializeComponents() {
@@ -452,8 +439,6 @@ class PortfolioManager {
                 if (visibility.hasOwnProperty(sectionId)) {
                     link.style.display = visibility[sectionId] ? 'block' : 'none';
                 }
-            } else if (href === 'blog.html' && visibility.hasOwnProperty('blog')) {
-                link.style.display = visibility.blog ? 'block' : 'none';
             }
         });
     }
@@ -569,38 +554,32 @@ class PortfolioManager {
 
     renderTimeline() {
         const container = document.getElementById('timelineItems');
-        const section = document.getElementById('timeline');
-        if (!container || !section) return;
+        if (!container) return;
 
-        // Apply global settings via CSS variables
-        const settings = this.config.timelineSettings || this.getDefaultTimelineSettings();
-        const fontScale = (settings && settings.fontScale != null) ? settings.fontScale : 1;
-        const markerWidth = (settings && settings.markerWidth != null) ? settings.markerWidth : 120;
-        const lineThickness = (settings && settings.lineThickness != null) ? settings.lineThickness : 3;
-        const itemMargin = (settings && settings.itemMargin != null) ? settings.itemMargin : 40;
-        section.classList.toggle('compact', !!(settings && settings.compact));
-        section.style.setProperty('--timeline-font-scale', fontScale);
-        section.style.setProperty('--timeline-marker-width', `${markerWidth}px`);
-        section.style.setProperty('--timeline-line-thickness', `${lineThickness}px`);
-        section.style.setProperty('--timeline-item-margin', `${itemMargin}px`);
+        const timeline = this.config.timeline;
 
-        // Respect per-item visibility and size
-        const timeline = (this.config.timeline || []).filter(item => item.visible !== false);
-
-        container.innerHTML = timeline.map((item, index) => {
-            const size = (item.size || 'md').toLowerCase();
-            const delay = (index * 0.2).toFixed(2);
-            return `
-            <div class="timeline-item size-${size} fade-in" style="animation-delay: ${delay}s">
+        container.innerHTML = timeline.map((item, index) => `
+            <div class="timeline-item fade-in ${item.visible === false ? 'hidden' : ''}" 
+                 data-timeline-id="${item.id}" 
+                 style="animation-delay: ${index * 0.2}s">
                 <div class="timeline-marker">
                     <div class="timeline-year">${item.year}</div>
                 </div>
                 <div class="timeline-content">
-                    <h3 class="timeline-title">${item.title}</h3>
+                    <h3 class="timeline-title">
+                        ${item.title}
+                        <div class="edit-controls">
+                            <button class="edit-btn" onclick="portfolio.editTimelineItem('${item.id}')">✎</button>
+                            <button class="edit-btn delete-btn" onclick="portfolio.deleteTimelineItem('${item.id}')">✕</button>
+                        </div>
+                    </h3>
                     <p class="timeline-description">${item.description}</p>
                 </div>
-            </div>`;
-        }).join('');
+            </div>
+        `).join('');
+        
+        this.renderTimelineToggles();
+        this.initializeTimelineControls();
     }
 
     renderStats() {
@@ -852,5 +831,173 @@ function scrollToSection(sectionId) {
 
 // Contact form and sending functionality removed as requested
 
+    // Timeline Management Methods
+    renderTimelineToggles() {
+        const container = document.getElementById('timelineToggles');
+        if (!container) return;
+
+        const timeline = this.config.timeline;
+
+        container.innerHTML = timeline.map(item => `
+            <div class="timeline-toggle">
+                <span class="toggle-label">${item.year} - ${item.title}</span>
+                <div class="toggle-switch ${item.visible !== false ? 'active' : ''}" 
+                     onclick="portfolio.toggleTimelineItem('${item.id}')">
+                </div>
+            </div>
+        `).join('');
+    }
+
+    initializeTimelineControls() {
+        // Timeline size control
+        const sizeControl = document.getElementById('timelineSize');
+        if (sizeControl) {
+            sizeControl.addEventListener('change', (e) => {
+                this.updateTimelineSize(e.target.value);
+            });
+        }
+
+        // Item spacing control
+        const spacingControl = document.getElementById('itemSpacing');
+        if (spacingControl) {
+            spacingControl.addEventListener('input', (e) => {
+                this.updateItemSpacing(e.target.value);
+                e.target.nextElementSibling.textContent = e.target.value + 'px';
+            });
+        }
+
+        // Font size control
+        const fontSizeControl = document.getElementById('fontSize');
+        if (fontSizeControl) {
+            fontSizeControl.addEventListener('input', (e) => {
+                this.updateFontSize(e.target.value);
+                e.target.nextElementSibling.textContent = e.target.value + 'px';
+            });
+        }
+
+        // Add new section button
+        const addButton = document.getElementById('addTimelineSection');
+        if (addButton) {
+            addButton.addEventListener('click', () => {
+                this.addNewTimelineSection();
+            });
+        }
+    }
+
+    updateTimelineSize(size) {
+        const container = document.getElementById('timelineItems');
+        if (container) {
+            container.className = `timeline-items ${size}`;
+        }
+    }
+
+    updateItemSpacing(spacing) {
+        const container = document.getElementById('timelineItems');
+        if (container) {
+            container.style.setProperty('--timeline-spacing', spacing + 'px');
+        }
+    }
+
+    updateFontSize(fontSize) {
+        const container = document.getElementById('timelineItems');
+        if (container) {
+            container.style.setProperty('--timeline-font-size', fontSize + 'px');
+            container.style.setProperty('--timeline-title-size', (parseFloat(fontSize) * 1.2) + 'px');
+        }
+    }
+
+    toggleTimelineItem(itemId) {
+        const item = this.config.timeline.find(t => t.id === itemId);
+        if (item) {
+            item.visible = !item.visible;
+            this.renderTimeline();
+            this.saveConfiguration();
+        }
+    }
+
+    editTimelineItem(itemId) {
+        const item = this.config.timeline.find(t => t.id === itemId);
+        if (!item) return;
+
+        const newYear = prompt('Enter year:', item.year);
+        if (newYear === null) return;
+
+        const newTitle = prompt('Enter title:', item.title);
+        if (newTitle === null) return;
+
+        const newDescription = prompt('Enter description:', item.description);
+        if (newDescription === null) return;
+
+        item.year = newYear;
+        item.title = newTitle;
+        item.description = newDescription;
+
+        this.renderTimeline();
+        this.saveConfiguration();
+    }
+
+    deleteTimelineItem(itemId) {
+        if (!confirm('Are you sure you want to delete this timeline item?')) return;
+
+        this.config.timeline = this.config.timeline.filter(t => t.id !== itemId);
+        this.renderTimeline();
+        this.saveConfiguration();
+    }
+
+    addNewTimelineSection() {
+        const year = prompt('Enter year:');
+        if (!year) return;
+
+        const title = prompt('Enter title:');
+        if (!title) return;
+
+        const description = prompt('Enter description:');
+        if (!description) return;
+
+        const newItem = {
+            id: 'timeline-' + Date.now(),
+            year: year,
+            title: title,
+            description: description,
+            visible: true
+        };
+
+        // Insert in chronological order (newest first)
+        const insertIndex = this.config.timeline.findIndex(item => 
+            parseInt(item.year) < parseInt(year)
+        );
+        
+        if (insertIndex === -1) {
+            this.config.timeline.push(newItem);
+        } else {
+            this.config.timeline.splice(insertIndex, 0, newItem);
+        }
+
+        this.renderTimeline();
+        this.saveConfiguration();
+    }
+
+    saveConfiguration() {
+        // Save the current configuration to localStorage
+        const portfolioData = {
+            colors: this.config.colors,
+            personal: this.config.personal,
+            projects: this.config.projects,
+            skills: this.config.skills,
+            contact: this.config.contact,
+            social: this.config.social,
+            timeline: this.config.timeline,
+            stats: this.config.stats,
+            blogs: this.config.blogs,
+            sectionVisibility: this.config.sectionVisibility
+        };
+        
+        localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
+    }
+}
+
 // Initialize the portfolio manager
 const portfolio = new PortfolioManager();
+
+// Make portfolio globally accessible
+window.portfolio = portfolio;
