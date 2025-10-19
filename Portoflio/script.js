@@ -804,5 +804,5 @@ function scrollToSection(sectionId) {
 }
 
 // Initialize
-const portfolio = new PortfolioManager
+const portfolio = new PortfolioManager()
 window.portfolio = portfolio;
