@@ -87,7 +87,8 @@ class PortfolioManager {
             // Load from JSON file
             const response = await fetch('portfolio-complete.json');
 
-            console.log(response);
+            console.log(' '+response.json().colors[0]);
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
