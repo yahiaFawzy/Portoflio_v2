@@ -404,7 +404,9 @@ class DashboardManager {
                 <p class="form-description">Control the visibility of individual elements across your portfolio. Toggle any item on or off to customize your layout.</p>
                 
                 ${Object.entries(sections).map(([sectionName, sectionData]) => {
-                    const sectionKey = sectionName.toLowerCase().replace(/\s+/g, '').replace('section', '');
+                    let sectionKey = sectionName.toLowerCase().replace(/\s+/g, '').replace('section', '');
+                    // Fix for "Visual Effects" -> "effects" mapping
+                    if (sectionKey === 'visualeffects') sectionKey = 'effects';
                     const sectionVisibility = data[sectionKey] || {};
                     
                     return `
