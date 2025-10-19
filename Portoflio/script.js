@@ -1,4 +1,4 @@
-// Portfolio Configuration and Data Management
+// Portfolio Manager - Reads from JSON file (GitHub Pages Compatible)
 class PortfolioManager {
     constructor() {
         this.config = {
@@ -11,8 +11,7 @@ class PortfolioManager {
             timeline: [],
             stats: [],
             blogs: [],
-            sectionVisibility: {},
-            visibilityOptions: {}
+            visibility: {}
         };
         this.isLoading = true;
         this.init();
@@ -26,36 +25,120 @@ class PortfolioManager {
 
     async loadConfiguration() {
         try {
-            // First try to load from localStorage (dashboard data)
-            const savedData = localStorage.getItem('portfolioData');
-
-            if (savedData) {
-                console.log('Loading portfolio data from dashboard...');
-                const portfolioData = JSON.parse(savedData);
-
-                // Map dashboard structure to portfolio structure
-                this.config.colors = portfolioData.colors || this.getDefaultColors();
-                this.config.personal = portfolioData.personal || this.getDefaultPersonalData();
-                this.config.projects = portfolioData.projects || this.getDefaultProjects();
-                this.config.skills = portfolioData.skills || this.getDefaultSkills();
-                this.config.contact = portfolioData.contact || this.getDefaultContact();
-                this.config.social = portfolioData.social || this.getDefaultSocial();
-                this.config.timeline = portfolioData.timeline || this.getDefaultTimeline();
-                this.config.stats = portfolioData.stats || this.getDefaultStats();
-                this.config.blogs = portfolioData.blogs || this.getDefaultBlogs();
-                this.config.sectionVisibility = portfolioData.sectionVisibility || this.getDefaultSectionVisibility();
-                this.config.visibilityOptions = portfolioData.visibilityOptions || this.getDefaultVisibilityOptions();
-
-                console.log('Portfolio data loaded successfully from dashboard');
-            } else {
-                console.log('No dashboard data found, using defaults');
-                this.loadDefaults();
+            console.log('📄 Loading data from portfolio-complete.json...');
+            
+            // Load from JSON file
+            const response = await fetch('portfolio-complete.json');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
+            
+            const data = await response.json();
+            
+            // Map JSON data to config
+            this.config.colors = data.colors || this.getDefaultColors();
+            this.config.personal = data.personal || this.getDefaultPersonalData();
+            this.config.projects = data.projects || this.getDefaultProjects();
+            this.config.skills = data.skills || this.getDefaultSkills();
+            this.config.contact = data.contact || this.getDefaultContact();
+            this.config.social = data.social || this.getDefaultSocial();
+            this.config.timeline = data.timeline || this.getDefaultTimeline();
+            this.config.stats = data.stats || this.getDefaultStats();
+            this.config.blogs = data.blogs || this.getDefaultBlogs();
+            this.config.visibility = this.mapVisibility(data.visibility);
 
+            console.log('✅ Portfolio data loaded successfully from JSON file');
+            
         } catch (error) {
-            console.warn('Error loading configuration, using defaults:', error);
+            console.error('❌ Error loading portfolio-complete.json:', error);
+            console.warn('⚠️ Using default data instead');
             this.loadDefaults();
         }
+    }
+
+    mapVisibility(dataVisibility) {
+        if (!dataVisibility) {
+            return this.getDefaultVisibility();
+        }
+
+        return {
+            header: {
+                show: dataVisibility.header?.logo !== false && 
+                      dataVisibility.header?.navigation !== false,
+                logo: dataVisibility.header?.logo !== false,
+                navigation: dataVisibility.header?.navigation !== false,
+                dashboardLink: dataVisibility.header?.dashboardLink !== false,
+                mobileMenu: dataVisibility.header?.mobileMenu !== false
+            },
+            hero: {
+                show: dataVisibility.hero?.title !== false,
+                title: dataVisibility.hero?.title !== false,
+                subtitle: dataVisibility.hero?.subtitle !== false,
+                buttons: dataVisibility.hero?.buttons !== false,
+                scrollIndicator: dataVisibility.hero?.scrollIndicator !== false,
+                backgroundCanvas: dataVisibility.hero?.backgroundCanvas !== false
+            },
+            about: {
+                show: dataVisibility.about?.title !== false || 
+                      dataVisibility.about?.description !== false,
+                title: dataVisibility.about?.title !== false,
+                description: dataVisibility.about?.description !== false,
+                profileImage: dataVisibility.about?.profileImage !== false,
+                experienceYears: dataVisibility.about?.experienceYears !== false,
+                projectsCompleted: dataVisibility.about?.projectsCompleted !== false,
+                awards: dataVisibility.about?.awards !== false
+            },
+            projects: {
+                show: dataVisibility.projects?.title !== false || 
+                      dataVisibility.projects?.projectGrid !== false,
+                title: dataVisibility.projects?.title !== false,
+                projectGrid: dataVisibility.projects?.projectGrid !== false,
+                featuredOnly: dataVisibility.projects?.featuredOnly !== false
+            },
+            skills: {
+                show: dataVisibility.skills?.title !== false || 
+                      dataVisibility.skills?.categories !== false,
+                title: dataVisibility.skills?.title !== false,
+                categories: dataVisibility.skills?.categories !== false,
+                icons: dataVisibility.skills?.icons !== false
+            },
+            contact: {
+                show: dataVisibility.contact?.title !== false,
+                title: dataVisibility.contact?.title !== false,
+                contactInfo: dataVisibility.contact?.contactInfo !== false,
+                email: dataVisibility.contact?.email !== false,
+                phone: dataVisibility.contact?.phone !== false,
+                location: dataVisibility.contact?.location !== false,
+                contactForm: dataVisibility.contact?.contactForm !== false,
+                socialLinks: dataVisibility.contact?.socialLinks !== false
+            },
+            footer: {
+                show: dataVisibility.footer?.copyright !== false || 
+                      dataVisibility.footer?.socialLinks !== false,
+                copyright: dataVisibility.footer?.copyright !== false,
+                socialLinks: dataVisibility.footer?.socialLinks !== false
+            },
+            effects: {
+                particles: dataVisibility.effects?.particles !== false,
+                scrollAnimations: dataVisibility.effects?.scrollAnimations !== false,
+                loadingScreen: dataVisibility.effects?.loadingScreen !== false,
+                glitchEffect: dataVisibility.effects?.glitchEffect !== false
+            }
+        };
+    }
+
+    getDefaultVisibility() {
+        return {
+            header: { show: true, logo: true, navigation: true, dashboardLink: true, mobileMenu: true },
+            hero: { show: true, title: true, subtitle: true, buttons: true, scrollIndicator: true, backgroundCanvas: true },
+            about: { show: true, title: true, description: true, profileImage: true, experienceYears: true, projectsCompleted: true, awards: true },
+            projects: { show: true, title: true, projectGrid: true, featuredOnly: false },
+            skills: { show: true, title: true, categories: true, icons: true },
+            contact: { show: true, title: true, contactInfo: true, email: true, phone: true, location: true, contactForm: true, socialLinks: true },
+            footer: { show: true, copyright: true, socialLinks: true },
+            effects: { particles: true, scrollAnimations: true, loadingScreen: true, glitchEffect: true }
+        };
     }
 
     getDefaultColors() {
@@ -65,15 +148,7 @@ class PortfolioManager {
             accent: "#ff6b6b",
             background: "#0a0a0a",
             surface: "#1a1a2e",
-            text: "#ffffff",
-            navbarBg: "rgba(10, 10, 10, 0.95)",
-            footerBg: "rgba(10, 10, 10, 0.9)",
-            cardBg: "rgba(26, 26, 46, 0.8)",
-            panelBg: "rgba(102, 126, 234, 0.1)",
-            border: "rgba(102, 126, 234, 0.2)",
-            mutedText: "rgba(255, 255, 255, 0.7)",
-            gradientStart: "#667eea",
-            gradientEnd: "#764ba2"
+            text: "#ffffff"
         };
     }
 
@@ -81,7 +156,7 @@ class PortfolioManager {
         return {
             name: "Alex Johnson",
             title: "Game Developer & Designer",
-            about: "Passionate game developer with 5+ years of experience creating immersive interactive experiences. Specialized in Unity, Unreal Engine, and cutting-edge game technologies. I believe in the power of games to tell stories, connect people, and create unforgettable moments.",
+            about: "Passionate game developer with 5+ years of experience creating immersive interactive experiences. Specialized in Unity, Unreal Engine, and cutting-edge game technologies.",
             experienceYears: 5,
             projectsCompleted: 23,
             awards: 7,
@@ -110,16 +185,6 @@ class PortfolioManager {
                 liveUrl: "#",
                 githubUrl: "#",
                 featured: true
-            },
-            {
-                id: 3,
-                title: "Space Defense VR",
-                description: "Virtual reality tower defense game where players protect Earth from alien invasions using hand gestures and strategic thinking.",
-                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%2364ffda'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='black' text-anchor='middle' dy='.3em'%3ESpace Defense VR%3C/text%3E%3C/svg%3E",
-                technologies: ["Unity", "VR SDK", "C#", "3D Modeling"],
-                liveUrl: "#",
-                githubUrl: "#",
-                featured: false
             }
         ];
     }
@@ -137,14 +202,6 @@ class PortfolioManager {
             "Graphics & Art": {
                 icon: "🎨",
                 skills: ["Blender", "Maya", "Photoshop", "Substance Painter", "Shader Programming"]
-            },
-            "Audio": {
-                icon: "🎵",
-                skills: ["FMOD", "Wwise", "Audacity", "FL Studio"]
-            },
-            "Tools & Platforms": {
-                icon: "🛠️",
-                skills: ["Git", "Perforce", "Jenkins", "Steam", "Mobile Platforms"]
             }
         };
     }
@@ -161,36 +218,35 @@ class PortfolioManager {
         return [
             { name: "GitHub", url: "https://github.com", icon: "🔗" },
             { name: "LinkedIn", url: "https://linkedin.com", icon: "💼" },
-            { name: "Twitter", url: "https://twitter.com", icon: "🐦" },
-            { name: "Portfolio", url: "#", icon: "🌐" }
+            { name: "Twitter", url: "https://twitter.com", icon: "🦅" }
         ];
     }
 
     getDefaultTimeline() {
         return [
             {
-                id: 'timeline-1',
+                id: "timeline-1",
                 year: "2024",
                 title: "Senior Game Developer",
                 description: "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics.",
                 visible: true
             },
             {
-                id: 'timeline-2',
+                id: "timeline-2",
                 year: "2022",
                 title: "Game Developer",
                 description: "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics.",
                 visible: true
             },
             {
-                id: 'timeline-3',
+                id: "timeline-3",
                 year: "2020",
                 title: "Junior Developer",
                 description: "Started career in game development, working on mobile games and learning industry best practices.",
                 visible: true
             },
             {
-                id: 'timeline-4',
+                id: "timeline-4",
                 year: "2019",
                 title: "Computer Science Graduate",
                 description: "Graduated with honors, specializing in computer graphics and game development technologies.",
@@ -201,91 +257,17 @@ class PortfolioManager {
 
     getDefaultStats() {
         return [
-            {
-                name: "Unity",
-                percentage: 95,
-                category: "Game Engines"
-            },
-            {
-                name: "C#",
-                percentage: 90,
-                category: "Programming"
-            },
-            {
-                name: "Unreal Engine",
-                percentage: 85,
-                category: "Game Engines"
-            },
-            {
-                name: "JavaScript",
-                percentage: 80,
-                category: "Programming"
-            },
-            {
-                name: "Blender",
-                percentage: 75,
-                category: "3D Graphics"
-            },
-            {
-                name: "Shader Programming",
-                percentage: 70,
-                category: "Graphics"
-            }
+            { name: "Unity", percentage: 95, category: "Game Engines" },
+            { name: "C#", percentage: 90, category: "Programming" },
+            { name: "Unreal Engine", percentage: 85, category: "Game Engines" },
+            { name: "JavaScript", percentage: 80, category: "Programming" },
+            { name: "Blender", percentage: 75, category: "3D Graphics" },
+            { name: "Shader Programming", percentage: 70, category: "Graphics" }
         ];
     }
 
     getDefaultBlogs() {
-        return [
-            {
-                id: 1,
-                title: "The Future of Game Development: VR and Beyond",
-                date: "2024-01-15",
-                summary: "Exploring the latest trends in virtual reality game development and what the future holds for immersive gaming experiences.",
-                content: "Virtual Reality has revolutionized the gaming industry in ways we never imagined. As a game developer who has worked extensively with VR technologies, I've witnessed firsthand how this medium transforms not just how we play games, but how we think about interactive experiences altogether.\n\nThe key to successful VR development lies in understanding the unique constraints and opportunities that the medium presents. Unlike traditional gaming, VR requires developers to think in three dimensions, consider physical comfort, and design for presence rather than just engagement.\n\nIn this post, I'll share insights from my recent VR projects and discuss emerging technologies that will shape the next generation of virtual experiences."
-            },
-            {
-                id: 2,
-                title: "Unity vs Unreal: Choosing the Right Engine for Your Project",
-                date: "2024-01-08",
-                summary: "A comprehensive comparison of Unity and Unreal Engine from a developer's perspective, including performance, workflow, and project considerations.",
-                content: "One of the most common questions I receive from aspiring game developers is: 'Should I use Unity or Unreal Engine?' The answer, as with most things in development, is 'it depends.'\n\nBoth engines have their strengths and are capable of producing amazing games. Unity excels in rapid prototyping, has a huge asset store, and is particularly strong for mobile and indie development. Unreal Engine, on the other hand, offers incredible visual fidelity out of the box, powerful Blueprint system, and is often preferred for AAA development.\n\nIn this detailed comparison, I'll break down the key factors you should consider when choosing between these two powerhouse engines."
-            },
-            {
-                id: 3,
-                title: "Shader Programming: Creating Visual Magic in Games",
-                date: "2023-12-22",
-                summary: "An introduction to shader programming and how custom shaders can elevate your game's visual appeal and performance.",
-                content: "Shaders are the secret sauce behind stunning game visuals. They're small programs that run on the GPU and control how pixels are rendered on screen. While they might seem intimidating at first, understanding shaders opens up a world of creative possibilities.\n\nIn my experience, custom shaders have been game-changers (pun intended) in several projects. From creating realistic water effects to stylized cartoon rendering, shaders allow developers to achieve unique visual styles that set their games apart.\n\nThis post will guide you through the basics of shader programming, common techniques, and practical examples you can implement in your own projects."
-            }
-        ];
-    }
-
-    getDefaultSectionVisibility() {
-        return {
-            home: true,
-            about: true,
-            projects: true,
-            skills: true,
-            timeline: true,
-            stats: true,
-            contact: true,
-            blog: true,
-            header: true
-        };
-    }
-
-    getDefaultVisibilityOptions() {
-        return {
-            about: {
-                showExperience: true,
-                showProjectsCompleted: true,
-                showAwards: true
-            },
-            header: {
-                showBlogLink: true,
-                showDashboardLink: true
-            }
-        };
+        return [];
     }
 
     loadDefaults() {
@@ -298,8 +280,7 @@ class PortfolioManager {
         this.config.timeline = this.getDefaultTimeline();
         this.config.stats = this.getDefaultStats();
         this.config.blogs = this.getDefaultBlogs();
-        this.config.sectionVisibility = this.getDefaultSectionVisibility();
-        this.config.visibilityOptions = this.getDefaultVisibilityOptions();
+        this.config.visibility = this.getDefaultVisibility();
     }
 
     initializeComponents() {
@@ -316,111 +297,6 @@ class PortfolioManager {
         this.initializeParticles();
         this.initializeCanvasBackground();
         this.initializeScrollAnimations();
-        this.setupDataRefreshListener();
-    }
-
-    // Add listener for localStorage changes (when dashboard updates data)
-    setupDataRefreshListener() {
-        // Listen for storage events (when data is updated from another tab/window)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'portfolioData') {
-                console.log('Portfolio data updated from dashboard, refreshing...');
-                this.loadConfiguration().then(() => {
-                    this.refreshPortfolio();
-                });
-            }
-        });
-
-        // Continuous update check removed as requested - keeping only storage event listener
-    }
-
-    checkForUpdates() {
-        const savedData = localStorage.getItem('portfolioData');
-        if (savedData) {
-            try {
-                const newData = JSON.parse(savedData);
-                // Simple check if data has changed
-                const newDataString = JSON.stringify(newData);
-                const currentDataString = JSON.stringify({
-                    colors: this.config.colors,
-                    personal: this.config.personal,
-                    projects: this.config.projects,
-                    skills: this.config.skills,
-                    contact: this.config.contact,
-                    social: this.config.social
-                });
-
-                if (newDataString !== currentDataString) {
-                    console.log('Portfolio data changed, refreshing...');
-                    this.loadConfiguration().then(() => {
-                        this.refreshPortfolio();
-                    });
-                }
-            } catch (error) {
-                console.warn('Error checking for updates:', error);
-            }
-        }
-    }
-
-    refreshPortfolio() {
-        this.applyColors();
-        this.applySectionVisibility();
-        this.populatePersonalData();
-        this.renderProjects();
-        this.renderSkills();
-        this.renderTimeline();
-        this.renderStats();
-        this.populateContact();
-        this.renderSocialLinks();
-
-        // Profile update notification removed as requested
-    }
-
-    showUpdateNotification() {
-        // Create a temporary notification
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, #667eea, #64ffda);
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-        `;
-        notification.textContent = 'Portfolio updated!';
-
-        // Add animation keyframes if not already added
-        if (!document.querySelector('#updateNotificationStyles')) {
-            const style = document.createElement('style');
-            style.id = 'updateNotificationStyles';
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        document.body.appendChild(notification);
-
-        // Remove notification after 3 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease forwards';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 2700);
     }
 
     applyColors() {
@@ -429,80 +305,117 @@ class PortfolioManager {
             root.style.setProperty(`--color-${key}`, value);
         });
 
-        // Apply colors to specific elements that use them directly
+        const primaryColor = this.config.colors.primary || '#64ffda';
+        const secondaryColor = this.config.colors.secondary || '#667eea';
+        const accentColor = this.config.colors.accent || '#ff6b6b';
+
         document.querySelectorAll('.hero-title').forEach(el => {
-            el.style.background = `linear-gradient(45deg, ${this.config.colors.primary}, ${this.config.colors.secondary}, ${this.config.colors.accent})`;
+            el.style.background = `linear-gradient(45deg, ${primaryColor}, ${secondaryColor}, ${accentColor})`;
             el.style.webkitBackgroundClip = 'text';
             el.style.webkitTextFillColor = 'transparent';
-            el.style.backgroundClip = 'text';
         });
 
         document.querySelectorAll('.section-title').forEach(el => {
-            el.style.background = `linear-gradient(45deg, ${this.config.colors.primary}, ${this.config.colors.secondary})`;
+            el.style.background = `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`;
             el.style.webkitBackgroundClip = 'text';
             el.style.webkitTextFillColor = 'transparent';
-            el.style.backgroundClip = 'text';
         });
     }
 
     applySectionVisibility() {
-        const visibility = this.config.sectionVisibility;
-        const itemVisibility = this.config.visibilityOptions || {};
+        const v = this.config.visibility;
         
-        // Handle sections
-        Object.entries(visibility).forEach(([sectionId, isVisible]) => {
-            const section = document.getElementById(sectionId);
+        const sectionsMap = {
+            'home': v.hero?.show,
+            'about': v.about?.show,
+            'projects': v.projects?.show,
+            'skills': v.skills?.show,
+            'timeline': true,
+            'stats': true,
+            'contact': v.contact?.show
+        };
+
+        Object.entries(sectionsMap).forEach(([id, show]) => {
+            const section = document.getElementById(id);
             if (section) {
-                section.style.display = isVisible ? 'block' : 'none';
+                section.style.display = show !== false ? '' : 'none';
             }
         });
 
-        // Update navigation links
-        const navLinks = document.querySelectorAll('.nav-menu a');
-        navLinks.forEach(link => {
+        document.querySelectorAll('.nav-menu a').forEach(link => {
             const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
+            if (href?.startsWith('#')) {
                 const sectionId = href.substring(1);
-                if (visibility.hasOwnProperty(sectionId)) {
-                    link.style.display = visibility[sectionId] ? 'block' : 'none';
-                }
+                const isVisible = sectionsMap[sectionId];
+                link.style.display = isVisible !== false ? '' : 'none';
             }
         });
 
-        // Header-only links
-        const blogLink = document.querySelector('.nav-menu a[href="blog.html"]');
-        if (blogLink) {
-            const allowed = (visibility.header !== false) && (!itemVisibility.header || itemVisibility.header.showBlogLink !== false);
-            blogLink.style.display = allowed ? '' : 'none';
-        }
         const dashboardLink = document.querySelector('.nav-menu a[href="dashboard.html"]');
         if (dashboardLink) {
-            const allowed = (visibility.header !== false) && (!itemVisibility.header || itemVisibility.header.showDashboardLink !== false);
-            dashboardLink.style.display = allowed ? '' : 'none';
+            dashboardLink.style.display = v.header?.dashboardLink !== false ? '' : 'none';
         }
 
-        // About stats items
-        const expEl = document.getElementById('experienceYears')?.closest('.stat-item');
-        if (expEl) {
-            const show = !itemVisibility.about || itemVisibility.about.showExperience !== false;
-            expEl.style.display = show ? '' : 'none';
+        if (v.hero) {
+            const heroSubtitle = document.querySelector('.hero-subtitle');
+            if (heroSubtitle) heroSubtitle.style.display = v.hero.subtitle !== false ? '' : 'none';
+            
+            const heroButtons = document.querySelector('.hero-buttons');
+            if (heroButtons) heroButtons.style.display = v.hero.buttons !== false ? '' : 'none';
+            
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            if (scrollIndicator) scrollIndicator.style.display = v.hero.scrollIndicator !== false ? '' : 'none';
+            
+            const gameCanvas = document.getElementById('gameCanvas');
+            if (gameCanvas) gameCanvas.style.display = v.hero.backgroundCanvas !== false ? '' : 'none';
         }
-        const projEl = document.getElementById('projectsCount')?.closest('.stat-item');
-        if (projEl) {
-            const show = !itemVisibility.about || itemVisibility.about.showProjectsCompleted !== false;
-            projEl.style.display = show ? '' : 'none';
+
+        if (v.about) {
+            const profileImage = document.querySelector('.about-image');
+            if (profileImage) profileImage.style.display = v.about.profileImage !== false ? '' : 'none';
+            
+            const stats = document.querySelectorAll('.stats-grid .stat-item');
+            if (stats[0]) stats[0].style.display = v.about.experienceYears !== false ? '' : 'none';
+            if (stats[1]) stats[1].style.display = v.about.projectsCompleted !== false ? '' : 'none';
+            if (stats[2]) stats[2].style.display = v.about.awards !== false ? '' : 'none';
         }
-        const awardsEl = document.getElementById('awardsCount')?.closest('.stat-item');
-        if (awardsEl) {
-            const show = !itemVisibility.about || itemVisibility.about.showAwards !== false;
-            awardsEl.style.display = show ? '' : 'none';
+
+        if (v.contact) {
+            const contactItems = document.querySelectorAll('.contact-item');
+            if (contactItems[0]) contactItems[0].style.display = v.contact.email !== false ? '' : 'none';
+            if (contactItems[1]) contactItems[1].style.display = v.contact.phone !== false ? '' : 'none';
+            if (contactItems[2]) contactItems[2].style.display = v.contact.location !== false ? '' : 'none';
+        }
+
+        if (v.footer) {
+            const footerText = document.querySelector('.footer-text');
+            if (footerText) footerText.style.display = v.footer.copyright !== false ? '' : 'none';
+            
+            const footerSocial = document.querySelector('.footer .social-links');
+            if (footerSocial) footerSocial.style.display = v.footer.socialLinks !== false ? '' : 'none';
+        }
+
+        if (v.effects) {
+            const particles = document.getElementById('particles');
+            if (particles) particles.style.display = v.effects.particles !== false ? '' : 'none';
+            
+            const loading = document.getElementById('loading');
+            if (loading && v.effects.loadingScreen === false) {
+                loading.style.display = 'none';
+            }
+            
+            const glitchElements = document.querySelectorAll('.glitch');
+            glitchElements.forEach(el => {
+                if (v.effects.glitchEffect === false) {
+                    el.classList.remove('glitch');
+                }
+            });
         }
     }
 
     populatePersonalData() {
         const data = this.config.personal;
 
-        // Hero section
         const heroName = document.getElementById('heroName');
         if (heroName) {
             heroName.textContent = data.name;
@@ -510,15 +423,10 @@ class PortfolioManager {
         }
 
         const heroTitle = document.querySelector('.hero-subtitle');
-        if (heroTitle) {
-            heroTitle.textContent = data.title;
-        }
+        if (heroTitle) heroTitle.textContent = data.title;
 
-        // About section
         const aboutDesc = document.getElementById('aboutDescription');
-        if (aboutDesc) {
-            aboutDesc.textContent = data.about;
-        }
+        if (aboutDesc) aboutDesc.textContent = data.about;
 
         const experienceYears = document.getElementById('experienceYears');
         const projectsCount = document.getElementById('projectsCount');
@@ -534,17 +442,14 @@ class PortfolioManager {
             profileImage.alt = data.name;
         }
 
-        // Animate numbers
         this.animateNumbers();
     }
 
     animateNumbers() {
         const animateNumber = (element, target, duration = 2000) => {
             if (!element) return;
-
             let start = 0;
             const increment = target / (duration / 16);
-
             const timer = setInterval(() => {
                 start += increment;
                 if (start >= target) {
@@ -567,9 +472,14 @@ class PortfolioManager {
         const container = document.getElementById('projectsGrid');
         if (!container) return;
 
-        const projects = this.config.projects.filter(p => p.featured).slice(0, 6);
+        const showFeaturedOnly = this.config.visibility?.projects?.featuredOnly !== false;
+        let projects = this.config.projects;
+        
+        if (showFeaturedOnly) {
+            projects = projects.filter(p => p.featured);
+        }
 
-        container.innerHTML = projects.map(project => `
+        container.innerHTML = projects.slice(0, 6).map(project => `
             <div class="project-card fade-in">
                 <div class="project-image">
                     <img src="${project.image}" alt="${project.title}">
@@ -581,8 +491,8 @@ class PortfolioManager {
                         ${project.technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
                     </div>
                     <div class="project-links">
-                        <a href="${project.liveUrl}" class="project-link" ${project.liveUrl === '#' ? '' : 'target="_blank" rel="noopener"'}>Live Demo</a>
-                        <a href="${project.githubUrl}" class="project-link" ${project.githubUrl === '#' ? '' : 'target="_blank" rel="noopener"'}>Source Code</a>
+                        <a href="${project.liveUrl}" class="project-link">Live Demo</a>
+                        <a href="${project.githubUrl}" class="project-link">Source Code</a>
                     </div>
                 </div>
             </div>
@@ -593,12 +503,12 @@ class PortfolioManager {
         const container = document.getElementById('skillsCategories');
         if (!container) return;
 
-        const skills = this.config.skills;
+        const showIcons = this.config.visibility?.skills?.icons !== false;
 
-        container.innerHTML = Object.entries(skills).map(([category, data]) => `
+        container.innerHTML = Object.entries(this.config.skills).map(([category, data]) => `
             <div class="skill-category fade-in">
                 <h3 class="category-title">
-                    <span class="category-icon">${data.icon}</span>
+                    ${showIcons ? `<span class="category-icon">${data.icon}</span>` : ''}
                     ${category}
                 </h3>
                 <div class="skills-list">
@@ -612,12 +522,10 @@ class PortfolioManager {
         const container = document.getElementById('timelineItems');
         if (!container) return;
 
-        const timeline = this.config.timeline;
+        const visibleTimeline = this.config.timeline.filter(item => item.visible !== false);
 
-        container.innerHTML = timeline.map((item, index) => `
-            <div class="timeline-item fade-in ${item.visible === false ? 'hidden' : ''}" 
-                 data-timeline-id="${item.id}" 
-                 style="animation-delay: ${index * 0.2}s">
+        container.innerHTML = visibleTimeline.map((item, index) => `
+            <div class="timeline-item fade-in" style="animation-delay: ${index * 0.2}s">
                 <div class="timeline-marker">
                     <div class="timeline-year">${item.year}</div>
                 </div>
@@ -633,9 +541,7 @@ class PortfolioManager {
         const container = document.getElementById('statsGrid');
         if (!container) return;
 
-        const stats = this.config.stats;
-
-        container.innerHTML = stats.map((stat, index) => `
+        container.innerHTML = this.config.stats.map((stat, index) => `
             <div class="stat-item fade-in" style="animation-delay: ${index * 0.1}s">
                 <div class="stat-header">
                     <h4 class="stat-name">${stat.name}</h4>
@@ -648,18 +554,12 @@ class PortfolioManager {
             </div>
         `).join('');
 
-        // Animate progress bars after a delay
-        setTimeout(() => {
-            this.animateStatsBars();
-        }, 500);
+        setTimeout(() => this.animateStatsBars(), 500);
     }
 
     animateStatsBars() {
-        const progressBars = document.querySelectorAll('.stat-progress');
-        
-        progressBars.forEach((bar, index) => {
+        document.querySelectorAll('.stat-progress').forEach((bar, index) => {
             const percentage = bar.getAttribute('data-percentage');
-            
             setTimeout(() => {
                 bar.style.width = `${percentage}%`;
             }, index * 100);
@@ -668,7 +568,6 @@ class PortfolioManager {
 
     populateContact() {
         const contact = this.config.contact;
-
         const emailEl = document.getElementById('contactEmail');
         const phoneEl = document.getElementById('contactPhone');
         const locationEl = document.getElementById('contactLocation');
@@ -682,10 +581,8 @@ class PortfolioManager {
         const container = document.getElementById('socialLinks');
         if (!container) return;
 
-        const social = this.config.social;
-
-        container.innerHTML = social.map(link => `
-            <a href="${link.url}" class="social-link" ${link.url === '#' ? '' : 'target="_blank" rel="noopener"'}>
+        container.innerHTML = this.config.social.map(link => `
+            <a href="${link.url}" class="social-link" target="_blank" rel="noopener">
                 ${link.icon}
             </a>
         `).join('');
@@ -696,50 +593,42 @@ class PortfolioManager {
         const navMenu = document.querySelector('.nav-menu');
         const navbar = document.getElementById('navbar');
 
-        if (!hamburger || !navMenu || !navbar) return;
-
-        // Mobile menu toggle
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close mobile menu when clicking on a link
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
             });
-        });
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
-                navbar.style.background = 'rgba(10, 10, 10, 0.98)';
-                navbar.style.backdropFilter = 'blur(20px)';
-            } else {
-                navbar.style.background = 'rgba(10, 10, 10, 0.95)';
-                navbar.style.backdropFilter = 'blur(10px)';
-            }
-        });
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
+        }
+
+        if (navbar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    navbar.style.background = 'rgba(10, 10, 10, 0.98)';
+                } else {
+                    navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+                }
+            });
+        }
     }
 
     initializeParticles() {
+        if (this.config.visibility?.effects?.particles === false) return;
+        
         const container = document.getElementById('particles');
         if (!container) return;
 
-        const particleCount = 50;
-
-        for (let i = 0; i < particleCount; i++) {
-            setTimeout(() => {
-                this.createParticle(container);
-            }, i * 200);
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => this.createParticle(container), i * 200);
         }
 
-        // Continuously create new particles
-        setInterval(() => {
-            this.createParticle(container);
-        }, 3000);
+        setInterval(() => this.createParticle(container), 3000);
     }
 
     createParticle(container) {
@@ -747,31 +636,26 @@ class PortfolioManager {
         particle.className = 'particle';
 
         const size = Math.random() * 4 + 2;
-        const leftPosition = Math.random() * 100;
-        const animationDuration = Math.random() * 5 + 5;
-
         particle.style.width = `${size}px`;
         particle.style.height = `${size}px`;
-        particle.style.left = `${leftPosition}%`;
-        particle.style.animationDuration = `${animationDuration}s`;
-        particle.style.background = this.config.colors.primary || 'var(--color-primary)';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.animationDuration = `${Math.random() * 5 + 5}s`;
+        particle.style.background = this.config.colors.primary;
 
         container.appendChild(particle);
 
-        // Remove particle after animation
         setTimeout(() => {
-            if (particle.parentNode) {
-                particle.parentNode.removeChild(particle);
-            }
-        }, animationDuration * 1000);
+            if (particle.parentNode) particle.remove();
+        }, (Math.random() * 5 + 5) * 1000);
     }
 
     initializeCanvasBackground() {
+        if (this.config.visibility?.hero?.backgroundCanvas === false) return;
+        
         const canvas = document.getElementById('gameCanvas');
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-
         const resizeCanvas = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -780,51 +664,35 @@ class PortfolioManager {
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // Simple animated background
-        const shapes = [];
-        const shapeCount = 20;
-
-        // Create shapes
-        for (let i = 0; i < shapeCount; i++) {
-            shapes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 30 + 10,
-                speedX: (Math.random() - 0.5) * 2,
-                speedY: (Math.random() - 0.5) * 2,
-                rotation: 0,
-                rotationSpeed: (Math.random() - 0.5) * 0.02
-            });
-        }
+        const shapes = Array.from({ length: 20 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 30 + 10,
+            speedX: (Math.random() - 0.5) * 2,
+            speedY: (Math.random() - 0.5) * 2,
+            rotation: 0,
+            rotationSpeed: (Math.random() - 0.5) * 0.02
+        }));
 
         const animate = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             shapes.forEach(shape => {
-                // Update position
                 shape.x += shape.speedX;
                 shape.y += shape.speedY;
                 shape.rotation += shape.rotationSpeed;
 
-                // Wrap around edges
                 if (shape.x > canvas.width + shape.size) shape.x = -shape.size;
                 if (shape.x < -shape.size) shape.x = canvas.width + shape.size;
                 if (shape.y > canvas.height + shape.size) shape.y = -shape.size;
                 if (shape.y < -shape.size) shape.y = canvas.height + shape.size;
 
-                // Draw shape
                 ctx.save();
                 ctx.translate(shape.x, shape.y);
                 ctx.rotate(shape.rotation);
-
-                // Use primary color from config
-                const primaryColor = this.config.colors.primary || '#64ffda';
-                ctx.strokeStyle = `${primaryColor}33`; // Add alpha
+                ctx.strokeStyle = `${this.config.colors.primary}33`;
                 ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.rect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
-                ctx.stroke();
-
+                ctx.strokeRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
                 ctx.restore();
             });
 
@@ -835,26 +703,29 @@ class PortfolioManager {
     }
 
     initializeScrollAnimations() {
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
+        if (this.config.visibility?.effects?.scrollAnimations === false) return;
+        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('fade-in');
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-        // Observe all sections and cards
-        document.querySelectorAll('section, .project-card, .skill-category, .contact-item').forEach(el => {
+        document.querySelectorAll('section, .project-card, .skill-category').forEach(el => {
             observer.observe(el);
         });
     }
 
     hideLoadingScreen() {
+        if (this.config.visibility?.effects?.loadingScreen === false) {
+            const loading = document.getElementById('loading');
+            if (loading) loading.style.display = 'none';
+            this.isLoading = false;
+            return;
+        }
+
         setTimeout(() => {
             const loading = document.getElementById('loading');
             if (loading) {
@@ -868,7 +739,6 @@ class PortfolioManager {
     }
 }
 
-// Utility Functions
 function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
@@ -876,12 +746,6 @@ function scrollToSection(sectionId) {
     }
 }
 
-// Contact form and sending functionality removed as requested
-
-}
-
-// Initialize the portfolio manager
-const portfolio = new PortfolioManager();
-
-// Make portfolio globally accessible
+// Initialize
+const portfolio = new PortfolioManager
 window.portfolio = portfolio;

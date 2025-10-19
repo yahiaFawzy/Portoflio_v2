@@ -49,7 +49,6 @@ class DashboardManager {
                 background: "#0a0a0a",
                 surface: "#1a1a2e",
                 text: "#ffffff",
-                // Additional color options
                 success: "#4caf50",
                 warning: "#ff9800",
                 error: "#f44336",
@@ -57,13 +56,10 @@ class DashboardManager {
                 muted: "#6c757d",
                 light: "#f8f9fa",
                 dark: "#343a40",
-                // Gradient colors
                 gradientStart: "#667eea",
                 gradientEnd: "#764ba2",
-                // Border and shadow colors
                 border: "rgba(100, 255, 218, 0.2)",
                 shadow: "rgba(0, 0, 0, 0.3)",
-                // Hover states
                 primaryHover: "#4fd3b8",
                 secondaryHover: "#5a6fd8",
                 accentHover: "#ff5252"
@@ -168,13 +164,75 @@ class DashboardManager {
             contact: {
                 email: "alex@gamedev.com",
                 phone: "+1 (555) 123-4567",
-                whatsapp: "+15551234567", // WhatsApp number (international format)
+                whatsapp: "+15551234567",
                 location: "San Francisco, CA"
             },
             social: [
                 { name: "GitHub", url: "https://github.com", icon: "🔗" },
                 { name: "LinkedIn", url: "https://linkedin.com", icon: "💼" },
-                { name: "Twitter", url: "https://twitter.com", icon: "🐦" }
+                { name: "Twitter", url: "https://twitter.com", icon: "🦅" }
+            ],
+            timeline: [
+                {
+                    id: "timeline-1",
+                    year: "2024",
+                    title: "Senior Game Developer",
+                    description: "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics.",
+                    visible: true
+                },
+                {
+                    id: "timeline-2",
+                    year: "2022",
+                    title: "Game Developer",
+                    description: "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics.",
+                    visible: true
+                },
+                {
+                    id: "timeline-3",
+                    year: "2020",
+                    title: "Junior Developer",
+                    description: "Started career in game development, working on mobile games and learning industry best practices.",
+                    visible: true
+                },
+                {
+                    id: "timeline-4",
+                    year: "2019",
+                    title: "Computer Science Graduate",
+                    description: "Graduated with honors, specializing in computer graphics and game development technologies.",
+                    visible: true
+                }
+            ],
+            stats: [
+                {
+                    name: "Unity",
+                    percentage: 95,
+                    category: "Game Engines"
+                },
+                {
+                    name: "C#",
+                    percentage: 90,
+                    category: "Programming"
+                },
+                {
+                    name: "Unreal Engine",
+                    percentage: 85,
+                    category: "Game Engines"
+                },
+                {
+                    name: "JavaScript",
+                    percentage: 80,
+                    category: "Programming"
+                },
+                {
+                    name: "Blender",
+                    percentage: 75,
+                    category: "3D Graphics"
+                },
+                {
+                    name: "Shader Programming",
+                    percentage: 70,
+                    category: "Graphics"
+                }
             ]
         };
     }
@@ -184,13 +242,11 @@ class DashboardManager {
         const dataToExport = filename ? this.data[filename] : this.data;
         const exportName = filename || 'portfolio-complete';
 
-        // Try to save to user-selected location first
         const saved = await this.saveToJsonFile(exportName, dataToExport);
         
         if (saved) {
             this.showStatus(`${exportName}.json exported successfully to selected folder!`, 'success');
         } else {
-            // Fallback message for download
             this.showStatus(`${exportName}.json downloaded to default Downloads folder`, 'success');
         }
     }
@@ -208,14 +264,11 @@ class DashboardManager {
                     try {
                         const importedData = JSON.parse(e.target.result);
 
-                        // Check if it's a complete portfolio or single section
                         if (importedData.colors && importedData.personal) {
-                            // Complete portfolio import
                             this.data = importedData;
                             this.saveDataToStorage();
                             this.showStatus('Complete portfolio data imported successfully!', 'success');
                         } else {
-                            // Single section import
                             this.data[this.currentFile] = importedData;
                             this.saveDataToStorage();
                             this.showStatus(`${this.currentFile} data imported successfully!`, 'success');
@@ -243,7 +296,6 @@ class DashboardManager {
     }
 
     setupEventListeners() {
-        // File selection
         document.querySelectorAll('.file-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
@@ -253,7 +305,6 @@ class DashboardManager {
             });
         });
 
-        // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -280,7 +331,9 @@ class DashboardManager {
             projects: 'Projects',
             skills: 'Skills & Technologies',
             contact: 'Contact Information',
-            social: 'Social Links'
+            social: 'Social Links',
+            timeline: 'Career Timeline',
+            stats: 'Skills Progress'
         };
 
         document.getElementById('contentTitle').textContent = titles[this.currentFile];
@@ -315,15 +368,26 @@ class DashboardManager {
             case 'social':
                 container.innerHTML = this.renderSocialForm(data);
                 break;
+            case 'timeline':
+                container.innerHTML = this.renderTimelineForm(data);
+                break;
+            case 'stats':
+                container.innerHTML = this.renderStatsForm(data);
+                break;
         }
 
         this.bindFormEvents();
     }
 
     renderVisibilityForm(data) {
+        // Ensure data exists
+        if (!data) {
+            data = this.loadDefaultData().visibility;
+        }
+        
         const sections = {
             'Header Section': {
-                icon: '🔝',
+                icon: '📋',
                 key: 'header',
                 items: {
                     logo: 'Logo/Brand',
@@ -387,7 +451,7 @@ class DashboardManager {
                 }
             },
             'Footer Section': {
-                icon: '🔻',
+                icon: '📻',
                 key: 'footer',
                 items: {
                     copyright: 'Copyright Text',
@@ -707,8 +771,89 @@ class DashboardManager {
         `;
     }
 
+    renderTimelineForm(data) {
+        return `
+            <div class="form-section">
+                <h3 class="form-section-title">📅 Career Timeline</h3>
+                <p class="form-description">Manage your career milestones and professional journey.</p>
+                <div id="timelineList">
+                    ${data.map((item, index) => `
+                        <div class="timeline-item-form" data-index="${index}" style="margin-bottom: 30px; padding: 20px; background: rgba(10,10,10,0.3); border-radius: 10px; border-left: 4px solid #64ffda;">
+                            <h4 style="color: #64ffda; margin-bottom: 15px;">Timeline Item ${index + 1}</h4>
+                            <div class="form-group">
+                                <label class="form-label">Year</label>
+                                <input type="text" class="form-input" value="${item.year}" data-field="year" data-index="${index}" placeholder="2024">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-input" value="${item.title}" data-field="title" data-index="${index}" placeholder="Senior Developer">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-input form-textarea" data-field="description" data-index="${index}" placeholder="Describe this milestone...">${item.description}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" ${item.visible !== false ? 'checked' : ''} data-field="visible" data-index="${index}" style="margin-right: 8px;">
+                                    Visible on Portfolio
+                                </label>
+                            </div>
+                            <button class="remove-btn" onclick="dashboard.removeTimelineItem(${index})">🗑️ Remove Item</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="add-btn" onclick="dashboard.addTimelineItem()">➕ Add Timeline Item</button>
+                <div class="editor-actions">
+                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderStatsForm(data) {
+        // Ensure data exists and is an array
+        if (!data || !Array.isArray(data)) {
+            data = [];
+        }
+        
+        return `
+            <div class="form-section">
+                <h3 class="form-section-title">📊 Skills Progress</h3>
+                <p class="form-description">Track your skill levels and proficiency percentages.</p>
+                <div id="statsList">
+                    ${data.map((stat, index) => `
+                        <div class="stat-item-form" data-index="${index}" style="margin-bottom: 25px; padding: 20px; background: rgba(10,10,10,0.3); border-radius: 10px;">
+                            <h4 style="color: #64ffda; margin-bottom: 15px;">Skill ${index + 1}</h4>
+                            <div class="form-group">
+                                <label class="form-label">Skill Name</label>
+                                <input type="text" class="form-input" value="${stat.name}" data-field="name" data-index="${index}" placeholder="Unity">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <input type="text" class="form-input" value="${stat.category}" data-field="category" data-index="${index}" placeholder="Game Engines">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Proficiency (%)</label>
+                                <input type="number" class="form-input" value="${stat.percentage}" data-field="percentage" data-index="${index}" min="0" max="100" placeholder="85">
+                                <div style="margin-top: 10px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${stat.percentage}%; background: linear-gradient(90deg, #64ffda, #667eea); transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                            <button class="remove-btn" onclick="dashboard.removeStatItem(${index})">🗑️ Remove Skill</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="add-btn" onclick="dashboard.addStatItem()">➕ Add Skill</button>
+                <div class="editor-actions">
+                    <button class="btn btn-primary" onclick="dashboard.saveFormData()">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="dashboard.exportData(dashboard.currentFile)">📤 Export This Section</button>
+                </div>
+            </div>
+        `;
+    }
+
     bindFormEvents() {
-        // Color inputs synchronization
         document.querySelectorAll('.color-input').forEach(input => {
             input.addEventListener('input', (e) => {
                 const textInput = e.target.parentNode.querySelector('input[type="text"]');
@@ -728,11 +873,9 @@ class DashboardManager {
         });
     }
 
-    // File saving functionality - saves to JSON files in directory
     async saveToJsonFile(filename, data) {
         const jsonString = JSON.stringify(data, null, 2);
 
-        // Try File System Access API first (Chrome/Edge)
         if ('showSaveFilePicker' in window) {
             try {
                 const fileHandle = await window.showSaveFilePicker({
@@ -755,7 +898,6 @@ class DashboardManager {
             }
         }
 
-        // Fallback to download method
         this.downloadJsonFile(filename, jsonString);
         return false;
     }
@@ -799,22 +941,27 @@ class DashboardManager {
                 case 'social':
                     this.saveSocialData();
                     break;
+                case 'timeline':
+                    this.saveTimelineData();
+                    break;
+                case 'stats':
+                    this.saveStatsData();
+                    break;
             }
 
-            // Save to localStorage
             const saved = this.saveDataToStorage();
 
             if (saved) {
-                this.showStatus(`${this.currentFile} data saved to local storage!`, 'success');
+                this.showStatus(`${this.currentFile} data saved!`, 'success');
             } else {
-                this.showStatus('Error saving to local storage', 'error');
+                this.showStatus('Error saving', 'error');
             }
 
             this.updateJSONEditor();
             this.updatePreview();
 
         } catch (error) {
-            this.showStatus('Error saving data: ' + error.message, 'error');
+            this.showStatus('Error: ' + error.message, 'error');
         }
     }
 
@@ -923,27 +1070,61 @@ class DashboardManager {
         this.data.social = social;
     }
 
+    saveTimelineData() {
+        const timeline = [];
+        const timelineItems = document.querySelectorAll('.timeline-item-form');
+
+        timelineItems.forEach((item, index) => {
+            const timelineEntry = { id: `timeline-${index + 1}` };
+            const inputs = item.querySelectorAll('input[data-field], textarea[data-field]');
+
+            inputs.forEach(input => {
+                const field = input.dataset.field;
+                if (field === 'visible') {
+                    timelineEntry[field] = input.checked;
+                } else {
+                    timelineEntry[field] = input.value;
+                }
+            });
+
+            timeline.push(timelineEntry);
+        });
+
+        this.data.timeline = timeline;
+    }
+
+    saveStatsData() {
+        const stats = [];
+        const statItems = document.querySelectorAll('.stat-item-form');
+
+        statItems.forEach(item => {
+            const stat = {};
+            const inputs = item.querySelectorAll('input[data-field]');
+
+            inputs.forEach(input => {
+                const field = input.dataset.field;
+                if (field === 'percentage') {
+                    stat[field] = parseInt(input.value) || 0;
+                } else {
+                    stat[field] = input.value;
+                }
+            });
+
+            stats.push(stat);
+        });
+
+        this.data.stats = stats;
+    }
+
     updateJSONEditor() {
         const editor = document.getElementById('jsonEditor');
         let dataForEditor = this.data[this.currentFile];
-        if (this.currentFile === 'visibility') {
-            dataForEditor = {
-                sectionVisibility: this.data.sectionVisibility || {},
-                visibilityOptions: this.data.visibilityOptions || {}
-            };
-        }
         editor.value = JSON.stringify(dataForEditor, null, 2);
     }
 
     updatePreview() {
         const preview = document.getElementById('jsonPreview');
         let dataForPreview = this.data[this.currentFile];
-        if (this.currentFile === 'visibility') {
-            dataForPreview = {
-                sectionVisibility: this.data.sectionVisibility || {},
-                visibilityOptions: this.data.visibilityOptions || {}
-            };
-        }
         preview.innerHTML = this.syntaxHighlight(JSON.stringify(dataForPreview, null, 2));
     }
 
@@ -977,7 +1158,6 @@ class DashboardManager {
         }, 3000);
     }
 
-    // Project management methods
     addProject() {
         const newProject = {
             id: this.data.projects.length + 1,
@@ -1001,7 +1181,6 @@ class DashboardManager {
         }
     }
 
-    // Skills management methods
     addSkillCategory() {
         const categoryName = prompt('Enter category name:');
         if (categoryName) {
@@ -1020,7 +1199,6 @@ class DashboardManager {
         }
     }
 
-    // Social links management methods
     addSocialLink() {
         const newLink = {
             name: "New Platform",
@@ -1039,7 +1217,44 @@ class DashboardManager {
         }
     }
 
-    // Color preset methods
+    addTimelineItem() {
+        const newItem = {
+            id: `timeline-${this.data.timeline.length + 1}`,
+            year: new Date().getFullYear().toString(),
+            title: "New Milestone",
+            description: "Describe this achievement or milestone...",
+            visible: true
+        };
+
+        this.data.timeline.push(newItem);
+        this.renderCurrentFile();
+    }
+
+    removeTimelineItem(index) {
+        if (confirm('Are you sure you want to remove this timeline item?')) {
+            this.data.timeline.splice(index, 1);
+            this.renderCurrentFile();
+        }
+    }
+
+    addStatItem() {
+        const newStat = {
+            name: "New Skill",
+            percentage: 50,
+            category: "Category"
+        };
+
+        this.data.stats.push(newStat);
+        this.renderCurrentFile();
+    }
+
+    removeStatItem(index) {
+        if (confirm('Are you sure you want to remove this skill?')) {
+            this.data.stats.splice(index, 1);
+            this.renderCurrentFile();
+        }
+    }
+
     applyColorPreset(presetName) {
         const presets = {
             cyberpunk: {
@@ -1184,35 +1399,13 @@ class DashboardManager {
     }
 
     resetColors() {
-        if (confirm('Reset all colors to default? This cannot be undone.')) {
-            this.data.colors = {
-                primary: "#64ffda",
-                secondary: "#667eea",
-                accent: "#ff6b6b",
-                background: "#0a0a0a",
-                surface: "#1a1a2e",
-                text: "#ffffff",
-                success: "#4caf50",
-                warning: "#ff9800",
-                error: "#f44336",
-                info: "#2196f3",
-                muted: "#6c757d",
-                light: "#f8f9fa",
-                dark: "#343a40",
-                gradientStart: "#667eea",
-                gradientEnd: "#764ba2",
-                border: "rgba(100, 255, 218, 0.2)",
-                shadow: "rgba(0, 0, 0, 0.3)",
-                primaryHover: "#4fd3b8",
-                secondaryHover: "#5a6fd8",
-                accentHover: "#ff5252"
-            };
+        if (confirm('Reset all colors to default?')) {
+            this.loadDefaultData();
             this.renderCurrentFile();
-            this.showStatus('Colors reset to default!', 'success');
+            this.showStatus('Colors reset!', 'success');
         }
     }
 
-    // Visibility preset methods
     applyVisibilityPreset(presetName) {
         const presets = {
             minimal: {
@@ -1290,7 +1483,7 @@ class DashboardManager {
     }
 
     resetVisibility() {
-        if (confirm('Reset all visibility settings to default? This cannot be undone.')) {
+        if (confirm('Reset all visibility settings to default?')) {
             this.data.visibility = {
                 header: { logo: true, navigation: true, dashboardLink: true, mobileMenu: true },
                 hero: { title: true, subtitle: true, buttons: true, scrollIndicator: true, backgroundCanvas: true },
@@ -1302,7 +1495,7 @@ class DashboardManager {
                 effects: { particles: true, scrollAnimations: true, loadingScreen: true, glitchEffect: true }
             };
             this.renderCurrentFile();
-            this.showStatus('Visibility settings reset to default!', 'success');
+            this.showStatus('Visibility reset!', 'success');
         }
     }
 }
@@ -1323,9 +1516,9 @@ function formatJSON() {
     try {
         const parsed = JSON.parse(editor.value);
         editor.value = JSON.stringify(parsed, null, 2);
-        dashboard.showStatus('JSON formatted successfully!', 'success');
+        dashboard.showStatus('JSON formatted!', 'success');
     } catch (error) {
-        dashboard.showStatus('Cannot format invalid JSON: ' + error.message, 'error');
+        dashboard.showStatus('Cannot format invalid JSON', 'error');
     }
 }
 
@@ -1333,31 +1526,17 @@ function saveJSON() {
     const editor = document.getElementById('jsonEditor');
     try {
         const parsed = JSON.parse(editor.value);
-        if (dashboard.currentFile === 'visibility') {
-            dashboard.data.sectionVisibility = parsed.sectionVisibility || {};
-            dashboard.data.visibilityOptions = parsed.visibilityOptions || {};
-        } else {
-            dashboard.data[dashboard.currentFile] = parsed;
-        }
-
-        // Save to localStorage
-        const saved = dashboard.saveDataToStorage();
-
-        if (saved) {
-            dashboard.showStatus(`${dashboard.currentFile} data saved to local storage!`, 'success');
-        } else {
-            dashboard.showStatus('Error saving to local storage', 'error');
-        }
-
+        dashboard.data[dashboard.currentFile] = parsed;
+        dashboard.saveDataToStorage();
+        dashboard.showStatus(`${dashboard.currentFile} saved!`, 'success');
         dashboard.renderCurrentFile();
     } catch (error) {
-        dashboard.showStatus('Cannot save invalid JSON: ' + error.message, 'error');
+        dashboard.showStatus('Cannot save invalid JSON', 'error');
     }
 }
 
 function previewPortfolio() {
-    // Open portfolio in new tab
-    window.open('Portoflio/index.html', '_blank');
+    window.open('index.html', '_blank');
 }
 
 // Initialize dashboard
