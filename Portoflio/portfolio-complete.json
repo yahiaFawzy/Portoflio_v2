@@ -5,11 +5,77 @@
     "accent": "#ff6b6b",
     "background": "#0a0a0a",
     "surface": "#1a1a2e",
-    "text": "#ffffff"
+    "text": "#ffffff",
+    "success": "#4caf50",
+    "warning": "#ff9800",
+    "error": "#f44336",
+    "info": "#2196f3",
+    "muted": "#6c757d",
+    "light": "#f8f9fa",
+    "dark": "#343a40",
+    "gradientStart": "#667eea",
+    "gradientEnd": "#764ba2",
+    "border": "rgba(100, 255, 218, 0.2)",
+    "shadow": "rgba(0, 0, 0, 0.3)",
+    "primaryHover": "#4fd3b8",
+    "secondaryHover": "#5a6fd8",
+    "accentHover": "#ff5252"
+  },
+  "visibility": {
+    "header": {
+      "logo": true,
+      "navigation": true,
+      "dashboardLink": false,
+      "mobileMenu": true
+    },
+    "hero": {
+      "title": true,
+      "subtitle": true,
+      "buttons": true,
+      "scrollIndicator": true,
+      "backgroundCanvas": true
+    },
+    "about": {
+      "title": true,
+      "description": true,
+      "profileImage": true,
+      "experienceYears": true,
+      "projectsCompleted": true,
+      "awards": true
+    },
+    "projects": {
+      "title": true,
+      "projectGrid": true,
+      "featuredOnly": false
+    },
+    "skills": {
+      "title": true,
+      "categories": true,
+      "icons": true
+    },
+    "contact": {
+      "title": true,
+      "contactInfo": true,
+      "email": true,
+      "phone": true,
+      "location": true,
+      "contactForm": true,
+      "socialLinks": true
+    },
+    "footer": {
+      "copyright": true,
+      "socialLinks": true
+    },
+    "effects": {
+      "particles": true,
+      "scrollAnimations": true,
+      "loadingScreen": true,
+      "glitchEffect": true
+    }
   },
   "personal": {
-    "name": "Yahia Fawzy ",
-    "title": "Game Developer & Graphics Engineer",
+    "name": "Yahia Fawzy10",
+    "title": "Game Developer & Designer",
     "about": "Passionate game developer with 5+ years of experience creating immersive interactive experiences. Specialized in Unity, Unreal Engine, and cutting-edge game technologies. I believe in the power of games to tell stories, connect people, and create unforgettable moments.",
     "experienceYears": 5,
     "projectsCompleted": 23,
@@ -43,66 +109,6 @@
         "C++",
         "UI/UX"
       ],
-      "liveUrl": "#",
-      "githubUrl": "#",
-      "featured": true
-    },
-    {
-      "id": 3,
-      "title": "New Project",
-      "description": "Project description here...",
-      "image": "",
-      "technologies": [],
-      "liveUrl": "#",
-      "githubUrl": "#",
-      "featured": true
-    },
-    {
-      "id": 4,
-      "title": "New Project",
-      "description": "Project description here...",
-      "image": "",
-      "technologies": [],
-      "liveUrl": "#",
-      "githubUrl": "#",
-      "featured": true
-    },
-    {
-      "id": 5,
-      "title": "New Project",
-      "description": "Project description here...",
-      "image": "",
-      "technologies": [],
-      "liveUrl": "#",
-      "githubUrl": "#",
-      "featured": true
-    },
-    {
-      "id": 6,
-      "title": "New Project",
-      "description": "Project description here...",
-      "image": "",
-      "technologies": [],
-      "liveUrl": "#",
-      "githubUrl": "#",
-      "featured": true
-    },
-    {
-      "id": 7,
-      "title": "New Project",
-      "description": "Project description here...",
-      "image": "",
-      "technologies": [],
-      "liveUrl": "#",
-      "githubUrl": "#",
-      "featured": true
-    },
-    {
-      "id": 8,
-      "title": "New Project",
-      "description": "Project description here...",
-      "image": "",
-      "technologies": [],
       "liveUrl": "#",
       "githubUrl": "#",
       "featured": true
@@ -142,6 +148,7 @@
   "contact": {
     "email": "alex@gamedev.com",
     "phone": "+1 (555) 123-4567",
+    "whatsapp": "+15551234567",
     "location": "San Francisco, CA"
   },
   "social": [
@@ -158,94 +165,69 @@
     {
       "name": "Twitter",
       "url": "https://twitter.com",
-      "icon": "🐦"
+      "icon": "🦅"
     }
   ],
   "timeline": [
     {
+      "id": "timeline-1",
       "year": "2024",
       "title": "Senior Game Developer",
-      "description": "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics."
+      "description": "Leading development of next-gen VR experiences and mentoring junior developers in advanced game mechanics.",
+      "visible": true
     },
     {
+      "id": "timeline-2",
       "year": "2022",
       "title": "Game Developer",
-      "description": "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics."
+      "description": "Developed multiple successful indie games using Unity and Unreal Engine, focusing on innovative gameplay mechanics.",
+      "visible": true
     },
     {
+      "id": "timeline-3",
       "year": "2020",
       "title": "Junior Developer",
-      "description": "Started career in game development, working on mobile games and learning industry best practices."
+      "description": "Started career in game development, working on mobile games and learning industry best practices.",
+      "visible": true
     },
     {
+      "id": "timeline-4",
       "year": "2019",
       "title": "Computer Science Graduate",
-      "description": "Graduated with honors, specializing in computer graphics and game development technologies."
+      "description": "Graduated with honors, specializing in computer graphics and game development technologies.",
+      "visible": true
     }
   ],
   "stats": [
     {
       "name": "Unity",
-      "percentage": 95,
-      "category": "Game Engines"
+      "category": "Game Engines",
+      "percentage": 95
     },
     {
       "name": "C#",
-      "percentage": 90,
-      "category": "Programming"
+      "category": "Programming",
+      "percentage": 90
     },
     {
       "name": "Unreal Engine",
-      "percentage": 85,
-      "category": "Game Engines"
+      "category": "Game Engines",
+      "percentage": 85
     },
     {
       "name": "JavaScript",
-      "percentage": 80,
-      "category": "Programming"
+      "category": "Programming",
+      "percentage": 80
     },
     {
       "name": "Blender",
-      "percentage": 75,
-      "category": "3D Graphics"
+      "category": "3D Graphics",
+      "percentage": 75
     },
     {
       "name": "Shader Programming",
-      "percentage": 70,
-      "category": "Graphics"
-    }
-  ],
-  "sectionVisibility": {
-    "home": true,
-    "about": true,
-    "projects": true,
-    "skills": true,
-    "timeline": true,
-    "stats": true,
-    "contact": true,
-    "blog": true
-  },
-  "blogs": [
-    {
-      "id": 1,
-      "title": "The Future of Game Development: VR and Beyond",
-      "date": "2024-01-15",
-      "summary": "Exploring the latest trends in virtual reality game development and what the future holds for immersive gaming experiences.",
-      "content": "Virtual Reality has revolutionized the gaming industry in ways we never imagined. As a game developer who has worked extensively with VR technologies, I've witnessed firsthand how this medium transforms not just how we play games, but how we think about interactive experiences altogether.\n\nThe key to successful VR development lies in understanding the unique constraints and opportunities that the medium presents. Unlike traditional gaming, VR requires developers to think in three dimensions, consider physical comfort, and design for presence rather than just engagement.\n\nIn this post, I'll share insights from my recent VR projects and discuss emerging technologies that will shape the next generation of virtual experiences."
-    },
-    {
-      "id": 2,
-      "title": "Unity vs Unreal: Choosing the Right Engine for Your Project",
-      "date": "2024-01-08",
-      "summary": "A comprehensive comparison of Unity and Unreal Engine from a developer's perspective, including performance, workflow, and project considerations.",
-      "content": "One of the most common questions I receive from aspiring game developers is: 'Should I use Unity or Unreal Engine?' The answer, as with most things in development, is 'it depends.'\n\nBoth engines have their strengths and are capable of producing amazing games. Unity excels in rapid prototyping, has a huge asset store, and is particularly strong for mobile and indie development. Unreal Engine, on the other hand, offers incredible visual fidelity out of the box, powerful Blueprint system, and is often preferred for AAA development.\n\nIn this detailed comparison, I'll break down the key factors you should consider when choosing between these two powerhouse engines."
-    },
-    {
-      "id": 3,
-      "title": "Shader Programming: Creating Visual Magic in Games",
-      "date": "2023-12-22",
-      "summary": "An introduction to shader programming and how custom shaders can elevate your game's visual appeal and performance.",
-      "content": "Shaders are the secret sauce behind stunning game visuals. They're small programs that run on the GPU and control how pixels are rendered on screen. While they might seem intimidating at first, understanding shaders opens up a world of creative possibilities.\n\nIn my experience, custom shaders have been game-changers (pun intended) in several projects. From creating realistic water effects to stylized cartoon rendering, shaders allow developers to achieve unique visual styles that set their games apart.\n\nThis post will guide you through the basics of shader programming, common techniques, and practical examples you can implement in your own projects."
+      "category": "Graphics",
+      "percentage": 70
     }
   ]
 }
