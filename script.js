@@ -1536,7 +1536,7 @@ function saveJSON() {
 }
 
 function previewPortfolio() {
-    window.open('index.html', '_blank');
+    window.open('/Portoflio/index.html', '_blank');
 }
 
 // Initialize dashboard
